@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/material-icons.css" rel="stylesheet" media="screen">
+    <link href="css/animate.css" rel="stylesheet" media="screen">
+    <link href="css/welcome.css" rel="stylesheet" media="screen">
+</head>
+
+<body class="backdrop-simple fade fade-1s">
+    <div id="wrapper">
+        <div id="title-inject">Sistema de Recuperação</div>
+	<button id="theme-toggle" style="display:none;">Toggle Theme</button>
+        <div id="content" class="pl-5 pr-5 pt-4 entire-page-fade">
+            <div class="row d-flex">
+                <div class="col-md-12 text-md-center application border rounded p-2 bg-light">
+                    <i style="font-size: 96px;" class="animated text-warning rollIn mt-4 material-icons">
+                        settings_backup_restore</i>
+		    <h2 class="mt-2 mb-4 animated fadeInUp" data-lang-en="Recovery System" data-lang-pt="Recuperação do Sistema"></h2>
+                    <p class="animated text-md-justify fadeInUp ml-4 mr-4 mb-4" data-lang-en="Your computer manufacturer recommends that you create recovery media to restore your machine in case of problems." data-lang-pt="O fabricante do computador recomenda que você crie uma mídia de
+			      recuperação para restaurar a máquina em caso de problemas."></p>
+		    <p class="animated text-md-justify fadeInUp ml-4 mr-4 mb-4" data-lang-en="This procedure should take approximately 10 minutes." data-lang-pt="Esse procedimento deve levar aproximadamente 10 minutos."></p>
+		    <p class="animated text-md-justify fadeInUp ml-4 mr-4 mb-5" data-lang-en="Do you want to create recovery media now?" data-lang-pt="Deseja criar uma mídia de recuperação agora?"></p>
+		    <button id="btn_burnrecover" class="btn btn-success btn-lg w-100 mb-5" type="button" onclick="openApp('btn_burnrecover', 'burnrecover')" data-lang-en="YES" data-lang-pt="SIM"> </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-2.1.4.js"></script>
+    <script src="js/tether.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/janimate.js"></script>
+    <script src="js/confetti.js"></script> <!-- Confetti only appears on special events -->
+    <script src="js/wow.js"></script>
+    <script src="js/welcome.js"></script>
+    <script src="js/system-recovery.js"></script>
+    <script src="js/theme-switch.js"></script>
+    <script src="js/translation.js"></script>
+</body>
+
+</html>

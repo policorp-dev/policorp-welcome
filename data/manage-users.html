@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/material-icons.css" rel="stylesheet" media="screen">
+  <link href="css/animate.css" rel="stylesheet" media="screen">
+  <link href="css/welcome.css" rel="stylesheet" media="screen">
+  <style>
+    .icon-256px {
+      font-size: 128px;
+    }
+  </style>
+</head>
+
+<body class="backdrop-simple hidden">
+  <div id="wrapper">
+    <div id="title-inject"> Controle de Usuários </div>
+    <button id="theme-toggle" style="display:none;">Toggle Theme</button>
+    <div id="content" class="pl-5 pr-5 pt-2 entire-page-fade">
+      <div class="row wow fadeIn text-md-center">
+        <div class="col-md-12 p-3">
+          <div class="card rounded bg-light">
+            <div class="card-body">
+              <img class="rounded" src="img/screenshots/tasks-users.png" style="width: 50%">
+              <p class="mt-3 ml-4 mr-4" data-lang-en="Do you share your computer with others? Set up a user account for each user to protect the individual privacy of each user sharing the same computer." 
+		data-lang-pt="Compartilha seu computador com outras pessoas? Configure uma conta
+                de usuário separada para cada usuário para proteger a privacidade individual
+                de cada usuário que compartilha o mesmo computador.">
+	      </p>
+              <p class="ml-4 mr-4" data-lang-en="You can also log into a Guest Session if someone is using your guest for a one-time use. " data-lang-pt="Você também pode fazer login em uma Sessão de Convidado se alguém
+	      estiver usando seu computador por uma única vez.">
+              </p>
+              <div class="text-md-center">
+                <a id="btn_open" class="btn btn-inverse" onclick="openManageUsers();" style="width: 40%;">
+			<i class="material-icons">group</i><span class="button-text" data-lang-en="Configure Users" data-lang-pt="Configurar Usuários"></span>
+                </a>
+                <hr class="soften-light">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/jquery-2.1.4.js"></script>
+  <script src="js/tether.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/janimate.js"></script>
+  <script src="js/confetti.js"></script>
+  <!-- Confetti only appears on special events -->
+  <script src="js/welcome.js"></script>
+  <script src="js/manage-users.js"></script>
+  <script src="js/theme-switch.js"></script>
+  <script src="js/translation.js"></script>
+</body>
+
+</html>
