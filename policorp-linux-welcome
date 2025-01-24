@@ -203,7 +203,7 @@ class AppView(WebKit2.WebView):
         elif uri == 'gnome-control-center-display':
             systemstate.open_gnome_control_center(self, "display")
         elif uri == 'gnome-control-center-user-accounts':
-            systemstate.open_gnome_control_center(self, "user-accounts")
+            systemstate.open_gnome_control_center(self, "users")
         elif uri == 'gnome-theme':
             systemstate.gnome_theme(self)
         elif uri == 'set-gnome-theme-light':
