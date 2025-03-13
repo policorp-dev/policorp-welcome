@@ -5,7 +5,7 @@ Categories=Utility;GNOME;GTK;
 StartupNotify=false
 Name=Policorp Linux Welcome
 Exec=env GDK_BACKEND=x11 /usr/share/policorp-linux-welcome/policorp-linux-welcome
-Icon=/usr/share/policorp-linux-welcome/data/img/welcome/icon.svg
+Icon=policorp-welcome
 Comment=Find out about your operating system.
 Keywords=desktop;preferences;
 StartupWMClass=policorp-linux-welcome

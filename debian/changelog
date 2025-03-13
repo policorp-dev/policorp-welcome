@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-9) stable; urgency=medium
+
+  * Atualizacoes para deb13
+
+ -- Erick Bonfanti <erick.bonfanti@policorp.com.br>  Fri, 07 Mar 2025 11:19:56 +0000
+
 policorp-linux-welcome (2.0.Policorp-8) stable; urgency=medium
 
   * Add suporte ao ingles

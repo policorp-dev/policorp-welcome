@@ -346,7 +346,7 @@ class SystemState(object):
         # Set default variables
         self.is_online = False
         self.updates_subscribed = False
-        self.app_version = '1.1'
+        self.app_version = '2.0'
         self.budgie_version = 'NA'
         self.budgie_version_number = ''
         self.bde_version = 'NA'
