@@ -765,12 +765,28 @@ class SystemState(object):
         popup = PopupMessage(message, PopupMessage.INFO)
         popup.showMessage()
 
+    def get_exec_command(self, filepath):
+        if not os.path.isfile(filepath):
+            print(f"Arquivo '{filepath}' não encontrado.")
+            return None
+
+        with open(filepath, 'r') as file:
+            for line in file:
+                if line.startswith('Exec='):
+                    return line.strip().split('=', 1)[1]
+        return None  # Caso não encontre a linha Exec=
+
     def open_app(self, webkit, appName):
         dbg.stdout('OpenApp', f'Abrindo {appName}...', 0, 3)
 
         if appName == "burnrecover":
+            caminho_arquivo = '/usr/share/applications/burnrecover.desktop'
+            comando_exec = self.get_exec_command(caminho_arquivo)
+            if not comando_exec:
+                comando_exec= "burnrecover"
+
             if(os.path.exists("/opt/burn.lock")):
-                command = "sudo burnrecover"
+                command = comando_exec
                 process = subprocess.Popen(command, shell=True)
             else:
                 command = "touch /opt/burn.lock && sudo burnrecover && rm -f /opt/burn.lock"
