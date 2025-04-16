@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-11) stable; urgency=medium
+
+  * Correcao bug do icone quebrado
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Wed, 16 Apr 2025 09:55:58 -0400
+
 policorp-linux-welcome (2.0.Policorp-10) stable; urgency=medium
 
   * Add nova chamada ao burnrecover
