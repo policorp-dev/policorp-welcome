@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-12) stable; urgency=medium
+
+  * Removido env GDK_BACKEND=x11
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Mon, 28 Apr 2025 19:01:46 +0000
+
 policorp-linux-welcome (2.0.Policorp-11) stable; urgency=medium
 
   * Correcao bug do icone quebrado
