@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Policorp Linux Welcome
-Exec=env GDK_BACKEND=x11 /usr/share/policorp-linux-welcome/policorp-linux-welcome
+Exec=/usr/share/policorp-linux-welcome/policorp-linux-welcome
 Icon=/usr/share/policorp-linux-welcome/data/img/welcome/icon.svg
 NoDisplay=true
 X-GNOME-Autostart-Phase=Applications
