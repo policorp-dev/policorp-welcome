@@ -163,7 +163,7 @@ class AppView(WebKit2.WebView):
                 self.page_title.set_visible(True)
                 self.home_btn.set_visible(False)
         elif uri == 'about':
-            distroname = "Debian 12"
+            distroname = "Debian 13"
             message = "<div class=\"text-md-center\">"
             message += "<strong>Policorp Linux Welcome</strong><br>"
             if self.lang_pt():
