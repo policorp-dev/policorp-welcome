@@ -94,7 +94,7 @@ class AppView(WebKit2.WebView):
         else:
             app.run_javascript("$('.offline').show()")
 
-        distroname = "Debian 12"
+        distroname = "Debian 13"
         app.run_javascript(
             "$('span[name=\"distro-name\"]').html('{}')".format(distroname))
 
@@ -163,7 +163,7 @@ class AppView(WebKit2.WebView):
                 self.page_title.set_visible(True)
                 self.home_btn.set_visible(False)
         elif uri == 'about':
-            distroname = "Debian 12"
+            distroname = "Debian 13"
             message = "<div class=\"text-md-center\">"
             message += "<strong>Policorp Linux Welcome</strong><br>"
             if self.lang_pt():
@@ -792,7 +792,7 @@ class SystemState(object):
                 command = "touch /opt/burn.lock && sudo burnrecover && rm -f /opt/burn.lock"
                 process = subprocess.Popen(command, shell=True)
         else:
-            command = "env GDK_BACKEND=x11 python3 /usr/share/policorp-store/src/main.py"
+            command = "python3 /usr/share/policorp-store/src/main.py"
             process = subprocess.Popen(command, shell=True)
 
     def open_site(self, webkit, site):
