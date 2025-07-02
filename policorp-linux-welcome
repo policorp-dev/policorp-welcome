@@ -548,7 +548,7 @@ class SystemState(object):
             for file in video_files:
                 full_path = f"/opt/{file}"
                 if os.path.exists(full_path):
-                    subprocess.Popen(["firefox-esr", full_path])
+                    subprocess.Popen(["x-www-browser", full_path])
                     #subprocess.Popen(["xdg-open", full_path])
                     break
             else:

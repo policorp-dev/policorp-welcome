@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-13) stable; urgency=medium
+
+  * Changed firefox-esr to x-www-browser
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Thu, 05 Jun 2025 20:30:03 +0000
+
 policorp-linux-welcome (2.0.Policorp-12) stable; urgency=medium
 
   * Removido env GDK_BACKEND=x11
