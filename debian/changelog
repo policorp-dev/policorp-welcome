@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-14) stable; urgency=medium
+
+  * Adicionando seta de retorno para o modo escuro
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Tue, 05 Aug 2025 16:11:25 -0300
+
 policorp-linux-welcome (2.0.Policorp-13) stable; urgency=medium
 
   * Changed firefox-esr to x-www-browser
