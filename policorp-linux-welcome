@@ -873,8 +873,16 @@ class WelcomeApp(object):
         theme.append_search_path(os.path.join(self._data_path, 'img', 'welcome'))
         iconfile = Gio.ThemedIcon(name="icon")
         about_img = Gtk.Image.new_from_gicon(iconfile, Gtk.IconSize.DND)
-        iconfile = Gio.ThemedIcon(name="go-left-symbolic")
-        back_img = Gtk.Image.new_from_gicon(iconfile, Gtk.IconSize.DND)
+       
+        settings = Gio.Settings.new("org.gnome.desktop.interface")
+        if settings.get_string("color-scheme") == "prefer-dark":
+            back_icon_name = "go-left-symbolic-light"
+        else:
+            back_icon_name = "go-left-symbolic"
+        
+        back_icon = Gio.ThemedIcon(name=back_icon_name)
+        back_img = Gtk.Image.new_from_gicon(back_icon, Gtk.IconSize.DND)
+        
         iconfile = Gio.ThemedIcon(name="home")
         home_img = Gtk.Image.new_from_gicon(iconfile, Gtk.IconSize.DND)
 
@@ -1041,11 +1049,19 @@ class WelcomeApp(object):
         if key == "color-scheme":
             new_theme = settings.get_string(key)
             self.handle_theme_change()
-            # Atualiza o label com o novo tema
+
             if new_theme == "default":
                 Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+                icon_name = "go-left-symbolic"
             elif new_theme == "prefer-dark":
                 Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", True)
+                icon_name = "go-left-symbolic-light"
+            else:
+                icon_name = "go-left-symbolic"
+
+            new_icon = Gio.ThemedIcon(name=icon_name)
+            new_image = Gtk.Image.new_from_gicon(new_icon, Gtk.IconSize.DND)
+            self.webkit.back_btn.set_image(new_image)
 
 if __name__ == "__main__":
 
