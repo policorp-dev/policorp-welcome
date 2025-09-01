@@ -1034,7 +1034,7 @@ class WelcomeApp(object):
             self.handle_theme_change()
 
     def threading_detect_system_theme(self):
-        time.sleep(0.8)
+        time.sleep(3)
         theme = self.settings.get_string("color-scheme")
         if theme == "default":
             return
