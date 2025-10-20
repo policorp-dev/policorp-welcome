@@ -521,7 +521,7 @@ class SystemState(object):
             dbg.stdout('open_manual_pdf', 'Abrindo pdf do manual do usuário', 1, 0)
             file = "/opt/manual.pdf"
             if os.path.exists(file):
-                subprocess.Popen(["xdg-open", file])
+                subprocess.Popen(["manual-launcher"])
             else:
                 file = "/usr/share/policorp-linux-welcome/files/Manual-Policorp-Linux-Not-OEM.pdf"
                 subprocess.Popen(["xdg-open", file])
