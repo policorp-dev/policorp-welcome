@@ -1021,8 +1021,16 @@ class WelcomeApp(object):
 
     def detect_system_theme(self):
         """Detecta o tema do sistema e chama a função handle_theme_change"""
+        try:
+            with open("/proc/cmdline", "r") as f:
+                cmdline = f.read()
+            if "boot=live" in cmdline:
+                Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+                self.handle_theme_change()
+                return
+        except Exception:
+            pass
         theme = self.settings.get_string("color-scheme")
-
         if theme == "default":
             Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
             self.handle_theme_change()
