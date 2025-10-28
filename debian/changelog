@@ -1,8 +1,9 @@
-policorp-linux-welcome (2.0.Policorp-16) UNRELEASED; urgency=medium
+policorp-linux-welcome (2.0.Policorp-17) stable; urgency=medium
 
   * changed manual
+  * Adicionando validação tema claro para maquina em modo live
 
- -- Erick Bonfati <erick.bonfati@policorp.com.br>  Wed, 10 Sep 2025 13:13:27 -0300
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Mon, 20 Oct 2025 15:34:20 -0300
 
 policorp-linux-welcome (2.0.Policorp-15) stable; urgency=medium
 
