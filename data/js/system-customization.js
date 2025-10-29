@@ -42,17 +42,35 @@ function openConfigDisplay() {
 }
 
 function selectBtnLight() {
-    var btn = document.getElementById('btn_light_mode');
-    btn.classList.remove('btn-transparent');
-    btn.classList.add('btn-primary');
+    var btnLight = document.getElementById('btn_light_mode');
+    var btnDark = document.getElementById('btn_dark_mode');
+
+    if (btnLight) {
+        btnLight.classList.remove('btn-transparent');
+        btnLight.classList.add('btn-primary');
+    }
+
+    if (btnDark) {
+        btnDark.classList.remove('btn-primary');
+        btnDark.classList.add('btn-transparent');
+    }
 
     setCursorNormal();
 }
 
 function selectBtnDark() {
-    var btn = document.getElementById('btn_dark_mode');
-    btn.classList.remove('btn-transparent');
-    btn.classList.add('btn-primary');
+    var btnLight = document.getElementById('btn_light_mode');
+    var btnDark = document.getElementById('btn_dark_mode');
+
+    if (btnDark) {
+        btnDark.classList.remove('btn-transparent');
+        btnDark.classList.add('btn-primary');
+    }
+
+    if (btnLight) {
+        btnLight.classList.remove('btn-primary');
+        btnLight.classList.add('btn-transparent');
+    }
 
     setCursorNormal();
 }
