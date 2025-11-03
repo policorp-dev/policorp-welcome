@@ -565,7 +565,19 @@ class SystemState(object):
             dbg.stdout('open_gnome_control_center', f"Falha ao abrir {panel} do gnome_control_center: {e}", 0, 1)
 
     def gnome_theme(self, webkit):
-        # Get select theme
+        # Get selected theme
+        try:
+            settings = Gio.Settings.new("org.gnome.desktop.interface")
+            scheme = settings.get_string("color-scheme")
+
+            if scheme == "prefer-dark":
+                app.run_javascript('selectBtnDark()')
+            else:
+                app.run_javascript('selectBtnLight()')
+            return
+        except Exception as e:
+            dbg.stdout('Theme', f'color-scheme lookup failed: {e}', 0, 1)
+
         try:
             # Executa o comando e captura a saída
             output = subprocess.check_output(['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme'])
@@ -1026,20 +1038,20 @@ class WelcomeApp(object):
                 cmdline = f.read()
             if "boot=live" in cmdline:
                 Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
-                self.handle_theme_change()
+                self.handle_theme_change(False)
                 return
         except Exception:
             pass
         theme = self.settings.get_string("color-scheme")
         if theme == "default":
             Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
-            self.handle_theme_change()
+            self.handle_theme_change(False)
         elif theme == "prefer-dark":
             Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", True)
-            self.handle_theme_change()
+            self.handle_theme_change(True)
         else:
             Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
-            self.handle_theme_change()
+            self.handle_theme_change(False)
 
     def threading_detect_system_theme(self):
         time.sleep(3)
@@ -1049,9 +1061,50 @@ class WelcomeApp(object):
         else:
             self.detect_system_theme()
 
-    def handle_theme_change(self):
-            js_code = "document.getElementById('theme-toggle').click();"
-            self.run_javascript(js_code)
+    def handle_theme_change(self, prefer_dark_override=None):
+        if prefer_dark_override is None:
+            prefer_dark = False
+            try:
+                scheme = self.settings.get_string("color-scheme")
+            except Exception:
+                scheme = None
+
+            if scheme == "prefer-dark":
+                prefer_dark = True
+            elif scheme in ("default", "prefer-light", None):
+                prefer_dark = False
+            else:
+                prefer_dark = Gtk.Settings.get_default().get_property("gtk-application-prefer-dark-theme")
+        else:
+            prefer_dark = prefer_dark_override
+
+        js_code = """
+        (function() {
+            const enableDark = %s;
+            function applyTheme() {
+                const wrapper = document.getElementById('wrapper');
+                if (!wrapper) {
+                    window.setTimeout(applyTheme, 100);
+                    return;
+                }
+                const hasDarkClass = wrapper.classList.contains('dark-mode');
+                const storageValue = enableDark ? 'enabled' : 'disabled';
+
+                if (enableDark && !hasDarkClass) {
+                    wrapper.classList.add('dark-mode');
+                } else if (!enableDark && hasDarkClass) {
+                    wrapper.classList.remove('dark-mode');
+                }
+
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('dark-mode', storageValue);
+                }
+            }
+            applyTheme();
+        })();
+        """ % ('true' if prefer_dark else 'false')
+        self.run_javascript(js_code)
+        self.run_javascript('selectBtnDark()' if prefer_dark else 'selectBtnLight()')
 
     def on_settings_changed(self, settings, key):
         if key == "color-scheme":
@@ -1080,4 +1133,3 @@ if __name__ == "__main__":
 
     app = WelcomeApp()
     app.run()
-
