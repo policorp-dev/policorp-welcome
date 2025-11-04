@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Policorp Linux Welcome
+Exec=/usr/share/policorp-linux-welcome/policorp-linux-welcome
+Icon=/usr/share/policorp-linux-welcome/data/img/welcome/icon.svg
+NoDisplay=true
+X-GNOME-Autostart-Phase=Applications
+AutostartCondition=unless-exists /opt/.oem-welcome-done

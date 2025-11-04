@@ -1,0 +1,109 @@
+policorp-linux-welcome (2.0.Policorp-18) stable; urgency=medium
+
+  * Adicionando correcao para inversao de temas
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Wed, 29 Oct 2025 10:21:32 -0300
+
+policorp-linux-welcome (2.0.Policorp-17) stable; urgency=medium
+
+  * changed manual
+  * Adicionando validação tema claro para maquina em modo live
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Mon, 20 Oct 2025 15:34:20 -0300
+
+policorp-linux-welcome (2.0.Policorp-15) stable; urgency=medium
+
+  * Correção de Sleep
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Tue, 12 Aug 2025 15:58:54 -0400
+
+policorp-linux-welcome (2.0.Policorp-14) stable; urgency=medium
+
+  * Adicionando seta de retorno para o modo escuro
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Tue, 05 Aug 2025 16:11:25 -0300
+
+policorp-linux-welcome (2.0.Policorp-13) stable; urgency=medium
+
+  * Changed firefox-esr to x-www-browser
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Thu, 05 Jun 2025 20:30:03 +0000
+
+policorp-linux-welcome (2.0.Policorp-12) stable; urgency=medium
+
+  * Removido env GDK_BACKEND=x11
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Mon, 28 Apr 2025 19:01:46 +0000
+
+policorp-linux-welcome (2.0.Policorp-11) stable; urgency=medium
+
+  * Correcao bug do icone quebrado
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Wed, 16 Apr 2025 09:55:58 -0400
+
+policorp-linux-welcome (2.0.Policorp-10) stable; urgency=medium
+
+  * Add nova chamada ao burnrecover
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Mon, 07 Apr 2025 15:33:46 -0400
+
+policorp-linux-welcome (2.0.Policorp-9) stable; urgency=medium
+
+  * Atualizacoes para deb13
+
+ -- Erick Bonfanti <erick.bonfanti@policorp.com.br>  Fri, 07 Mar 2025 11:19:56 +0000
+
+policorp-linux-welcome (2.0.Policorp-8) stable; urgency=medium
+
+  * Add suporte ao ingles
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Tue, 10 Dec 2024 15:01:57 -0400
+
+policorp-linux-welcome (2.0.Policorp-7) stable; urgency=medium
+
+  * Add modo escuro e claro
+  * Add icone "Home" na página principal
+
+ -- Erick Bonfati <erick.bonfati@policorp.com.br>  Fri, 11 Nov 2024 15:56:30 -0400
+
+policorp-linux-welcome (2.0.Policorp-5) stable; urgency=medium
+
+  * Fix para checkboxes.
+  * Modificado label de envio de registro.
+
+ -- Matheus Aguiar <matheus.aguiar@policorp.com.br>  Tue, 13 Aug 2024 16:26:21 -0400
+
+policorp-linux-welcome (2.0.Policorp-4) stable; urgency=medium
+
+  * Adicionado botao de codecs e condicao de aparicao.
+
+ -- Matheus Aguiar <matheus.aguiar@policorp.com.br>  Fri, 09 Aug 2024 11:26:46 -0400
+
+policorp-linux-welcome (2.0.Policorp-3) stable; urgency=medium
+
+  * Abrir Policorp-tour com o firefox
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Tue, 06 Aug 2024 12:53:09 -0400
+
+policorp-linux-welcome (2.0.Policorp-2) stable; urgency=medium
+
+  * Mudanca de script bash de senha para C 
+  * Verificacao se é versao Policorp
+  * Correcao para abrir manual no Policorp
+  * Corrigido a chamada do Burnrecover
+  * Corrigido Bug em clicar em Link
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Wed, 10 Jul 2024 13:25:14 -0400
+
+policorp-linux-welcome (2.0.Policorp-1) stable; urgency=medium
+
+  * Feito modificações no data-sender e ajustado init
+
+ -- Matheus Aguiar <matheus.aguiar@policorp.com.br>  Mon, 24 Jun 2024 08:27:28 -0400
+
+policorp-linux-welcome (1.0-0) unstable; urgency=low
+
+  * Primeira versão do pacote Debian.
+    - Adiconando arquivos e diretórios da solução.
+
+ -- Jorge Neto <jorge.neto@policorp.com.br>  Thu, 03 May 2024 15:25:30 +0300

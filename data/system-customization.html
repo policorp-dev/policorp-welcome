@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/material-icons.css" rel="stylesheet" media="screen">
+  <link href="css/animate.css" rel="stylesheet" media="screen">
+  <link href="css/welcome.css" rel="stylesheet" media="screen">
+</head>
+
+<body class="backdrop-simple fade fade-1s">
+  <div id="wrapper">
+    <div id="title-inject">Customização do Sistema </div>
+    <button id="theme-toggle" style="display:none;">Toggle Theme</button>
+    <div id="content" class="pl-5 pr-5 pt-3">
+      <div class="card rounded m-2 p-4 text-center bg-light">
+        <div class="row">
+          <div class="col-md-6">
+            <div id="btn_light_mode" class="card rounded card-menu-1 shadow" onclick="setTheme('light')">
+              <div class="card-body">
+                <img class="rounded" src="img/screenshots/light-mode.png" />
+                <hr class="soften-light">
+		<h5 class="text-theme" data-lang-en="Light Mode" data-lang-pt="Modo Claro"></h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div id="btn_dark_mode" class="card rounded card-menu-1 shadow" onclick="setTheme('dark')">
+              <div class="card-body">
+                <img class="rounded" src="img/screenshots/dark-mode.png" />
+                <hr class="soften-light">
+		<h5 class="text-theme" data-lang-en="Dark Mode" data-lang-pt="Modo Escuro"></h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <br> 
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+		    <strong class="main-text-customization" data-lang-en="Appearance Settings" data-lang-pt="Configuração de Aparência"></strong>
+
+              <p class="text-customization" data-lang-en="Policorp Linux offers options to define and customize themes and several other available visual configurations." data-lang-pt="O Policorp Linux oferece opções para definir e personalizar
+			temas e diversas outras configurações visuais diponíveis."></p>
+              <a id="btn_background" class="btn btn-inverse" onclick="openConfigBackground();">
+                <img class="button-icon" src="img/applications/preferences-desktop-wallpaper.png" />
+		<span class="button-text" data-lang-en="Appearence Settings" data-lang-pt="Configuração de Aparência"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+		    <strong class="main-text-customization" data-lang-en="Screen Configuration" data-lang-pt="Configuração de Tela"></strong>
+              <p class="text-customization" data-lang-en="Policorp Linux offers options to adjust and customize the screen configuration and other visual settings." data-lang-pt="O Policorp Linux oferece opções para ajustar e personalizar a configuração da tela e outras configurações visuais."> </p>
+              <a id="btn_display" class="btn btn-inverse w-80" onclick="openConfigDisplay();">
+                <img class="button-icon" src="img/applications/video-display.png" />
+		<span class="button-text" data-lang-en="Screen Configuration" data-lang-pt="Configuração de Tela"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- end of content -->
+  </div> <!-- end of wrapper -->
+  <script src="js/jquery-2.1.4.js"></script>
+  <script src="js/tether.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/janimate.js"></script>
+  <script src="js/confetti.js"></script> <!-- Confetti only appears on special events -->
+  <script src="js/welcome.js"></script>
+  <script src="js/system-customization.js"></script>
+  <script src="js/theme-switch.js"></script>
+  <script src="js/translation.js"></script>
+  <script>
+	document.addEventListener('DOMContentLoaded', function() {
+    	// Determina o idioma do sistema
+    	const systemLanguage = navigator.language || navigator.userLanguage; // Pode ser pt-BR, en-US, etc.
+
+    	// Verifica se o idioma do sistema é português (pt) ou outro idioma
+    	const isPortuguese = systemLanguage.startsWith('pt');
+
+    	// Seleciona todos os elementos com a classe text-md-left
+    	const textElements = document.querySelectorAll('.text-customization');
+
+    	// Função para aplicar a substituição de BREAK pelo elemento <a>
+    	function applyTextReplacement(language) {
+        	textElements.forEach(function(element) {
+            	// Pega o conteúdo do atributo data-lang-{language}
+            	const text = element.getAttribute(`data-lang-${language}`);
+
+            	// Substitui BREAK pelo elemento <a> com onclick e id
+            	const replacedText = text.replace(/Policorp Linux/g, `<strong class="text-primary">Policorp Linux</strong>`);
+
+            	// Atualiza o conteúdo do elemento com o texto modificado
+            	element.innerHTML = replacedText;
+        	});
+    	}
+
+    	// Aplica a substituição conforme o idioma
+    	if (isPortuguese) {
+        	applyTextReplacement('pt');  // Se o idioma for português, usa o data-lang-pt
+    	} else {
+        	applyTextReplacement('en');  // Se não for português, usa o data-lang-en
+   	}
+});
+  </script>
+</body>
+
+</html>

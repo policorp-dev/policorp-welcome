@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/material-icons.css" rel="stylesheet" media="screen">
+  <link href="css/animate.css" rel="stylesheet" media="screen">
+  <link href="css/welcome.css" rel="stylesheet" media="screen">
+  <style>
+    .icon-256px {
+      font-size: 128px;
+    }
+  </style>
+</head>
+
+<body class="backdrop-simple hidden">
+  <div id="wrapper">
+    <div id="title-inject"> Introdução ao Sistema </div>
+    <button id="theme-toggle" style="display:none;">Toggle Theme</button>
+    <div id="content" class="pl-5 pr-5 pt-4 entire-page-fade">
+      <div class="row mt-3 text-md-center">
+        <div class="col-md-6">
+          <div class="card rounded card-menu-1 shadow bg-light" onclick="cmd('init-manual-video')">
+            <div class="card-body card-menu-body p-4">
+              <img class="rounded w-100" src="img/screenshots/video-manual.png">
+              <p class="mt-4 mb-3" data-lang-en="System Tour is a video that will show you 
+				   how to navigate the system, highlighting its features and ensuring its effective and simple use."
+			data-lang-pt="Tour pelo Sistema é um vídeo que mostrará a você 
+                como navegar pelo sistema, destacando suas funcionalidades e garantindo seu 
+                uso eficaz, produtivo e simples."</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card rounded card-menu-1 shadow bg-light" onclick="cmd('init-manual-pdf')">
+            <div class="card-body card-menu-body p-4">
+              <img class="rounded w-100" src="img/screenshots/pdf-manual.png">
+              <p class="mt-4 mb-3" data-lang-en="User Manual is an essential PDF to help you 
+			take advantage of all the features of the operating system in a simple and practical way." data-lang-pt="Manual do Usuário é um PDF indispensável para ajudar você 
+			a aproveitar todas as funcionalidades do sistema operacional de forma simples e prática.                                                                              
+		"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/jquery-2.1.4.js"></script>
+  <script src="js/tether.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/janimate.js"></script>
+  <script src="js/confetti.js"></script>
+  <!-- Confetti only appears on special events -->
+  <script src="js/welcome.js"></script>
+  <script src="js/theme-switch.js"></script>
+  <script src="js/translation.js"></script>
+  <script>
+	const systemLanguage = navigator.language || navigator.userLanguage; // Pode ser pt-BR, en-US, etc.
+	const isPortuguese = systemLanguage.startsWith('pt');
+	const textElements = document.querySelectorAll('.mt-4');
+
+	// Defina os padrões de substituição para cada idioma
+	const replacements = {
+    	en: {
+        	"User Manual": "<b>User Manual</b>",
+		"System Tour": "<b>System Tour</b>", // Exemplo de outro termo
+    	},
+    	pt: {
+        	"Manual do Usuário": "<b>Manual do Usuário</b>",
+        	"Tour pelo Sistema": "<b>Tour pelo Sistema</b>", // Exemplo de outro termo
+    	},
+	};
+
+	// Função para aplicar substituições
+	function applyTextReplacement(language) {
+    		const languageReplacements = replacements[language];
+    		if (!languageReplacements) return;
+
+    		textElements.forEach(function (element) {
+        	let text = element.getAttribute(`data-lang-${language}`);
+        	if (!text) return;
+
+        	// Substitui todos os padrões configurados
+        	for (const [search, replace] of Object.entries(languageReplacements)) {
+            	text = text.replace(new RegExp(search, 'g'), replace);
+        	}
+
+        	element.innerHTML = text;
+    	});
+	}
+
+	// Aplica a substituição conforme o idioma
+	if (isPortuguese) {
+    	applyTextReplacement('pt'); // Se o idioma for português, usa o data-lang-pt
+	} else {
+    	applyTextReplacement('en'); // Se não for português, usa o data-lang-en
+	}
+
+  </script>
+</body>
+
+</html>

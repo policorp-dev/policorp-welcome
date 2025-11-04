@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/material-icons.css" rel="stylesheet" media="screen">
+    <link href="css/animate.css" rel="stylesheet" media="screen">
+    <link href="css/welcome.css" rel="stylesheet" media="screen">
+</head>
+
+<body class="backdrop-simple">
+    <div id="title-inject">Menu Principal</div>
+    <button id="theme-toggle" style="display:none;">Toggle Theme</button>
+    <div class="main fade fade-1s" id="wrapper">
+        <div id="header" class="p-3">
+            <div class="row">
+                <div class="col-md-12 center">
+			<h5 data-lang-en="Welcome to" data-lang-pt="Seja bem-vindo ao" class="welcome-text"></h5>
+                </div>
+                <div class="col-md-12 center">
+                    <img src="img/welcome/ubuntu-budgie-wordmark.svg" class="img-logo" alt="...">
+                </div>
+                <div class="col-md-12 center">
+                    <a id="videoLink" onclick="openVideoTour()"
+                        class="btn btn-transparent btn-sm video-link blink mt-2 cursor-progress">
+                        <span class="btn-icon material-icons icon-video-tour">video_library</span>
+			<span class="lbl-video-tour p" id="system-tour" data-lang-en="Take a tour of the system!" data-lang-pt="Faça um tour pelo sistema!"> </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="content" class="container content fade fade-2s">
+            <div class="row">
+                <div class="col-md-6 text-md-center">
+                    <!-- Documentation -->
+                    <div class="button-group ml-3 mr-3 mb-2">
+                        <div class="card card-menu-1 shadow" onclick="smoothPageFade('system-password.html')">
+                            <div id="card_password" class="card-body card-menu-body card-password">
+                                <span id="ico_password"
+                                    class="btn-icon text-primary material-icons card-icon-password">lock</span>
+				<span class="p lbl-menu-1 card-lbl-password" data-lang-en="Administrator Password" data-lang-pt="Senha do Administrador"> </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-group ml-3 mr-3 mb-2">
+                        <div class="card card-menu-2 shadow" onclick="smoothPageFade('manage-users.html')">
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon text-success material-icons">group</span>
+				<span class="p" data-lang-en="User Control " data-lang-pt="Controle de Usuários"> </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-group ml-3 mr-3 mb-2">
+                        <div class="card card-menu-3 shadow" onclick="smoothPageFade('system-specifications.html')">
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon material-icons">info</span>
+				<span class="p" data-lang-en="System Information" data-lang-pt="Informações do Sistema"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-center">
+                    <!-- Project -->
+                    <div class="button-group ml-3 mr-3 mb-2">
+                        <div class="card card-menu-5 shadow" onclick='smoothPageFade("system-customization.html")'>
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon material-icons">stars</span>
+				<span class="p" data-lang-en="System customization" data-lang-pt="Customização do Sistema"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-group ml-3 mr-3 mb-2">
+                        <div class="card card-menu-6 shadow" onclick='smoothPageFade("guide.html")'>
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon text-danger material-icons">book</span>
+				<span class="p" data-lang-en="System Introduction" data-lang-pt="Introdução ao Sistema"> </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="btn_group_recovery" class="button-group ml-3 mr-3 mb-2 d-none">
+                        <div class="card card-menu-4 shadow" onclick='smoothPageFade("system-recovery.html")'>
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon text-warning material-icons">settings_backup_restore</span>
+				<span class="p" data-lang-en="Recovery System" data-lang-pt="Sistema de Recuperação"> </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="btn_group_codec" class="button-group ml-3 mr-3 mb-2 d-none">
+                        <div class="card card-menu-1 shadow" onclick='openCodec()'>
+                            <div class="card-body card-menu-body">
+                                <span class="btn-icon material-icons">perm_media</span>
+                                <span class="p" data-lang-en="Install Multimedia Codecs" data-lang-pt="Instalar Codecs Multimídia"> </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2 mb-2">
+                <div class="col-5 btn-showcase text-md-center">
+			<div class="form-check fade fade-5s hvr-shadow" id="openStartup">
+                        <input class="form-check-input" type="checkbox" value="" id="openNextStartup" checked>
+                        <label class="form-check-label" for="openNextStartup" data-lang-en="Open at next startup" data-lang-pt="Abrir na próxima inicialização"> </label>
+			<div class="hover-box" data-lang-en="After changing the password, you can disable this box so BREAK that this application does not appear on future startups" data-lang-pt="Após trocar a senha você poderá desabilitar está BREAK caixa para que essa aplicação não apareça nas próximas inicializações."></div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-5 btn-showcase text-md-center" id="senderBox">
+                    <div class="form-check fade fade-5s hvr-shadow">
+                        <input class="form-check-input" type="checkbox" value="" id="sendDataToRecord" checked>
+                        <label class="form-check-label" for="sendDataToRecord" data-lang-en="Send system information" data-lang-pt="Enviar informações do Sistema"></label>
+			<div class="hover-box"  data-lang-en="Send us your feedback on how the system is working BREAK and help us improve Policorp Linux." data-lang-pt="Envie as informações de como o sistema está funcionando BREAK e nos ajude a melhorar o Policorp Linux."></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="footer" class="bottom">
+            <div class="container-fluid">
+                <div class="row footer-content">
+			<div class="col-md-6 text-md-left" data-lang-en="Access: BREAK" data-lang-pt="Acesse: BREAK">
+			<!--<a onclick="openSite('btn_suport', 'https://www.policorp.com.br/faq')" id="btn_suport" class="entire-page-fade btn btn-link">www.policorp.com.br/faq</a>-->
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4 social text-md-right">
+                        <a id="btn_policorp" class="hover-menu-block"
+                            onclick="openSite('btn_policorp', 'https://www.policorp.com.br/')">
+                            <img src="img/social/policorp.png" />
+                        </a>
+                        <a id="btn_linkedin" class="hover-menu-block"
+                            onclick="openSite('btn_linkedin', 'https://br.linkedin.com/company/policorp-tecnologia')">
+                            <img src="img/social/linkedin.png" />
+                        </a>
+                        <a id="btn_youtube" class="hover-menu-block"
+                            onclick="openSite('btn_youtube', 'https://www.youtube.com/@policorptecnologia')">
+                            <img src="img/social/youtube.png" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-2.1.4.js"></script>
+    <script src="js/tether.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/janimate.js"></script>
+    <script src="js/confetti.js"></script> <!-- Confetti only appears on special events -->
+    <script src="js/welcome.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/theme-switch.js"></script>
+    <script src="js/translation.js"></script>
+    <script src="js/text-formatting.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,1135 @@
+#! /usr/bin/python3
+
+import re
+import threading
+from threading import Thread
+import shutil
+import gi
+try:
+    gi.require_version('WebKit2', '4.1')
+    gi.require_version('Gtk', '3.0')
+except:
+    gi.require_version('WebKit2', '4.0')
+
+from gi.repository import WebKit2, Gtk, Gio, Gdk, GLib
+import json
+import webbrowser
+import urllib.error
+import urllib.request
+import sys
+import subprocess
+import signal
+import os
+import inspect
+import time
+
+try:
+    import distro
+except:
+    import platform
+
+
+# global variable - path inc the suffix / of where the app is being executed
+start_location = "./"  # path defined on app startup
+
+win = None
+
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
+
+
+class AppView(WebKit2.WebView):
+
+    def __init__(self):
+        WebKit2.WebView.__init__(self)
+
+        self.connect('load-changed', self._load_changed_cb)
+        self.connect('notify::title', self._title_changed_cb)
+        self.connect('context-menu', self._context_menu_cb)
+
+        self.l_uri = None
+        self.back_btn = None
+        self.page_title = None
+        self.home_btn = None
+
+        self.back_signal_handler = None
+
+    def _back_action(self, data):
+        app.run_javascript("smoothPageFade('index.html')")
+
+    def _index_action(self, data):
+        app.run_javascript("backAction()")
+
+    def _push_config(self):
+        current_page = app.current_page.replace(".html", "")
+
+        if "?" in current_page:
+            current_page = current_page.replace("?", "")
+
+        # Dynamically toggle header controls button
+        if current_page != "index":
+            if not self.back_btn.is_sensitive():
+                self.back_signal_handler = self.back_btn.connect(
+                        "clicked", self._back_action)
+
+                self.back_btn.set_sensitive(True)
+        else:
+            if self.back_signal_handler:
+                self.back_btn.disconnect(self.back_signal_handler)
+                self.back_signal_handler = None
+            self.back_btn.set_sensitive(False)
+
+            if app.hasRecover:
+                app.run_javascript("document.getElementById('btn_group_recovery').classList.remove('d-none');")
+                app.run_javascript("document.getElementById('btn_group_recovery').classList.add('d-block');")
+            else:
+                app.run_javascript("document.getElementById('btn_group_codec').classList.remove('d-none');")
+                app.run_javascript("document.getElementById('btn_group_codec').classList.add('d-block');")
+
+
+        app.update_page('.normal-session-only', 'show')
+
+        if systemstate.is_online:
+            app.run_javascript("$('.offline').hide()")
+        else:
+            app.run_javascript("$('.offline').show()")
+
+        distroname = "Debian 13"
+        app.run_javascript(
+            "$('span[name=\"distro-name\"]').html('{}')".format(distroname))
+
+        # Apply intermediate actions, if any are present
+        if current_page in systemstate.intermediate_actions:
+            for action in systemstate.intermediate_actions[current_page]:
+                app.update_page(action[0], action[1], action[2], action[3])
+
+    def _load_changed_cb(self, view, frame):
+        uri = str(self.get_uri())
+
+        try:
+            app.current_page = uri.rsplit('#')[0].rsplit('/', 1)[1]
+            self._push_config()
+        except IndexError as e:
+            dbg.stdout("_load_changed_cb", "weird uri " + uri, 0, 1)
+
+    def _title_changed_cb(self, view, frame):
+        title = self.get_title()
+
+        # An empty command get executed while toggling startup
+        # option. Actual reason for this command execution needs
+        # to be investigated.
+        if title == '':
+            return
+        # Mapeamento de títulos
+        title_map = {
+                "title? Introdução ao Sistema": "title? System Introduction",
+                "title?Senha do Administrador": "title?Administrator Password",
+                "title?Customização do Sistema": "title?System Customization",
+                "title? Controle de Usuários": "title? User Control",
+                "title?Informações do Sistema": "title?System Information",
+                "title?Sistema de Recuperação": "title?Recovery System",
+                }
+        # Substituir o título se ele existir no mapeamento e o sistema tiver em ingles
+        if not self.lang_pt():
+            title = title_map.get(title, title)
+
+        self._do_command(title)
+
+        # Clear title after executing a command. Otherwise, if the same
+        # command is executed with another event, it won't be identified
+        # as there is no effective title change. Consider links in applets
+        # page. Multiple links refers to budgie-extras repository.
+        app.run_javascript("document.title = ''")
+
+    def _context_menu_cb(self, webview, menu, event, htr, user_data=None):
+        # Disable context menu.
+        return True
+
+    def lang_pt(self):
+        lang = os.environ.get('LANG', 'en_US')
+        language_code = lang.split('.')[0]
+        return language_code == "pt_BR"
+
+    def _do_command(self, uri):
+        if uri.startswith("title?"):
+            title = uri[6:]
+            self.page_title.set_label(title)
+            if "Menu Principal" in title:
+                self.back_btn.set_visible(False)
+                self.page_title.set_visible(False)
+                self.home_btn.set_visible(True)
+            else:
+                self.back_btn.set_visible(True)
+                self.page_title.set_visible(True)
+                self.home_btn.set_visible(False)
+        elif uri == 'about':
+            distroname = "Debian 13"
+            message = "<div class=\"text-md-center\">"
+            message += "<strong>Policorp Linux Welcome</strong><br>"
+            if self.lang_pt():
+                message += "Versão {}".format(
+                        systemstate.app_version
+                        )
+            else:
+                message += "Version {}".format(
+                        systemstate.app_version
+                        )
+
+            message += "<br><br> Policorp Tecnolgia Ltda"
+            message += "<br><br>Policorp Linux ({})".format(
+                distroname
+            )
+
+            message += "</div>"
+
+            popup = PopupMessage(message, PopupMessage.INFO)
+
+            popup.showMessage()
+        elif uri == 'check-init-main':
+            systemstate.check_status_password(self)
+        elif 'check-status-init=' in uri:
+            status = uri.replace('check-status-init=', '')
+            systemstate.check_status_init(self, status)
+        elif uri == 'init-manual-pdf':
+            systemstate.open_manual_pdf(self)
+        elif uri == 'init-codec':
+            systemstate.open_codec(self)
+        elif uri == 'init-manual-video':
+            systemstate.open_manual_video(self)
+        elif uri == 'init-system-info':
+            systemstate.get_system_info(self)
+        elif uri == 'gnome-control-center-background':
+            systemstate.open_gnome_control_center(self, "background")
+        elif uri == 'gnome-control-center-display':
+            systemstate.open_gnome_control_center(self, "display")
+        elif uri == 'gnome-control-center-user-accounts':
+            systemstate.open_gnome_control_center(self, "users")
+        elif uri == 'gnome-theme':
+            systemstate.gnome_theme(self)
+        elif uri == 'set-gnome-theme-light':
+            systemstate.set_gnome_theme(self, "Adwaita")
+        elif uri == 'set-gnome-theme-dark':
+            systemstate.set_gnome_theme(self, "Adwaita-dark")
+        elif 'set-password=' in uri:
+            password = uri.replace('set-password=', '')
+            systemstate.set_password(self, "simple", password)
+        elif 'set-password-general=' in uri:
+            password = uri.replace('set-password-general=', '')
+            systemstate.set_password(self, "general", password)
+        elif 'opensite=' in uri:
+            site = uri.replace('opensite=', '')
+            systemstate.open_site(self, site)
+        elif 'openemail=' in uri:
+            email = uri.replace('openemail=', '')
+            systemstate.open_email(self, email)
+        elif uri == 'burnrecover':
+            systemstate.open_app(self, "burnrecover")
+        elif uri == 'policorpstore':
+            systemstate.open_app(self, "policorpstore")
+        else:
+            print('Unknown command: {}'.format(uri))
+
+
+class Debug(object):
+    def __init__(self):
+        self.verbose_level = 0
+
+    def stdout(self, item, info, verbosity=0, colour=0):
+        # Only colourise output if running in a real terminal.
+        if sys.stdout.isatty():
+            end = '\033[0m'
+            if colour == 1:  # Failure (Red)
+                start = '\033[91m'
+            elif colour == 2:  # Success (Green)
+                start = '\033[92m'
+            elif colour == 3:  # Action (Yellow)
+                start = '\033[93m'
+            elif colour == 4:  # Debug (Blue)
+                start = '\033[96m'
+            else:  # Normal/Misc (White)
+                start = '\033[0m'
+
+        # Ignore colours when redirected or piped.
+        else:
+            start = ''
+            end = ''
+
+        # Output the message depending how detailed it is.
+        if verbosity <= self.verbose_level:
+            print(start + '[' + item + '] ' + info, end)
+
+
+class PopupMessage(object):
+    ERROR = 0
+    CONFIRMATION = 1
+    STATUS = 2
+    INFO = 3
+
+    def __init__(self, message, type, details=None, actions=dict(OK='removeSlowly(\'#popup-message-window\')')):
+        '''
+         message => Message to user
+         type => Type of message(error, confirmation ..etc)
+        '''
+        self.details = details
+        self.message = message
+        self.type = type
+        self.actions = actions
+
+    def showMessage(self):
+        # Remove message window if already exists
+        app.update_page('#popup-message-window', 'remove')
+
+        # Dynamically inject Popup message window
+        app.update_page('#wrapper', 'append', '<div id="popup-message-window">\
+            <div id="popup-message-container">\
+            </div>\
+        </div>')
+
+        app.update_page('#popup-message-container', 'append', '<p id="popup-message">' +
+                        self.message + '</p>')
+        if self.type == PopupMessage.ERROR and self.details:
+            app.update_page('#popup-message-container', 'append',
+                            '<textarea id="details">' + self.details + '</textarea>')
+        elif self.type == PopupMessage.STATUS:
+            html_table = '<table class="table table-bordered table-condensed">'
+            html_table += '<thead><th>TASK</th><th>NAME</th><th>STATUS</th></thead>'
+            for task in self.details:
+                html_table += '<tr>'
+                html_table += '<td>{}</td><td>{}</td><td>{}</td>'.format(
+                    task[0], task[1], task[2])
+            html_table += '</table>'
+
+            html_table = '<div id="status-table-container">' + html_table + '</div>'
+
+            app.update_page('#popup-message-container', 'append', html_table)
+        elif self.type == PopupMessage.INFO:
+            pass  # Message is already added
+        else:
+            dbg.stdout(self.type, 'message is not handled yet', 3)
+
+        buttons = ''
+
+        if "Senha alterada com sucesso" or "Password changed successfully" in self.message:
+            self.actions = dict(OK='removeSlowly(\'#popup-message-window\', \'open-index\')')
+        else:
+            self.actions = dict(OK='removeSlowly(\'#popup-message-window\', \'open-none\')')
+        for action in self.actions:
+            buttons += '<a class="btn btn-primary" onclick="' + self.actions[
+                action] + ';document.title=\'\'">' + action + '</a>'
+
+        app.update_page('#popup-message-container', 'append',
+                        '<div class="text-md-right">' + buttons + '</div>')
+        app.update_page('#popup-message-window', 'fadeIn')
+
+
+class PMEntry(object):
+    INSTALL = 0
+    REMOVE = 1
+    SCRIPT = 2
+
+    def __init__(self, task, filename, code, actions):
+        self.task = task
+        self.code = code
+
+        # UI updates done and remembered before starting task
+        # and need to 'forget' after finishing task
+        self.actions = actions
+        # File in which installation/removal option is listed.
+        # This is required to remove actions after installation
+        # /removal
+        self.filename = filename
+
+
+class SystemState(object):
+
+    def __init__(self):
+        # Set default variables
+        self.is_online = False
+        self.updates_subscribed = False
+        self.app_version = '2.0'
+        self.budgie_version = 'NA'
+        self.budgie_version_number = ''
+        self.bde_version = 'NA'
+        self.speed = None
+        self.first_run = False
+        self.graphics_vendor = 'Unknown'
+        self.graphics_grep = 'Unknown'
+        self.scale_factor = 0
+        self.app_view = AppView()
+
+        # Full path to binary
+        self._welcome_bin_path = os.path.abspath(
+            inspect.getfile(inspect.currentframe()))
+
+        # Get current architecture of system.
+        self.arch = str(
+            subprocess.Popen(['dpkg', '--print-architecture'], stdout=subprocess.PIPE).communicate()[0]).strip('\\nb\'')
+
+        self.session_type = 'normal'
+
+        # To inform the user if they are running in BIOS or UEFI mode.
+        if os.path.exists("/sys/firmware/efi"):
+            self.boot_mode = 'UEFI'
+        else:
+            self.boot_mode = 'BIOS'
+
+        # Multithread to prevent holding up program execution.
+        Thread(target=self.detect_graphics).start()
+
+        # Retain some show/hide actions applied while changing page.
+        # This is specially required when page change happens while
+        # installation/removal is in progress.
+        self.intermediate_actions = {}
+
+    def addIntermediateActions(self, filename, actions):
+
+        if filename not in self.intermediate_actions:
+            self.intermediate_actions[filename] = []
+
+        self.intermediate_actions[filename] += actions
+
+    def removeIntermediateActions(self, filename, actions):
+
+        for action in actions:
+            self.intermediate_actions[filename].remove(action)
+
+        if len(self.intermediate_actions[filename]) == 0:
+            del self.intermediate_actions[filename]
+
+    def detect_graphics(self):
+        # TODO: Support dual graphic cards.
+        dbg.stdout('Specs', 'Detecting graphics vendor... ', 1, 3)
+        try:
+            output = subprocess.Popen(
+                'lspci | grep VGA', stdout=subprocess.PIPE, shell='True').communicate()[0]
+            output = output.decode(encoding='UTF-8')
+        except:
+            # When 'lspci' does not find a VGA controller (this is the case for the RPi 2)
+            dbg.stdout(
+                'Specs', "Couldn't detect a VGA Controller on this system.", 0, 1)
+            output = 'Unknown'
+
+        # Scan for and set known brand name.
+        if output.find('NVIDIA') != -1:
+            self.graphics_vendor = 'NVIDIA'
+        elif output.find('AMD') != -1:
+            self.graphics_vendor = 'AMD'
+        elif output.find('Intel') != -1:
+            self.graphics_vendor = 'Intel'
+        elif output.find('VirtualBox') != -1:
+            self.graphics_vendor = 'VirtualBox'
+        elif output.find('VMware') != -1:
+            self.graphics_vendor = 'VMware'
+        else:
+            self.graphics_vendor = 'Unknown'
+
+        self.graphics_grep = repr(output)
+        self.graphics_grep = self.graphics_grep.split("controller: ", 1)
+        if len(self.graphics_grep) >= 2:
+            self.graphics_grep = self.graphics_grep[1]
+            self.graphics_grep = self.graphics_grep.split("\\n", 1)[0]
+        else:
+            self.graphics_grep = "Unknown"
+        dbg.stdout('Specs', 'Detected: ' + str(self.graphics_grep), 1, 2)
+
+    def check_recover(self):
+        try:
+            # Verificar a presença da partição recover
+            recover_partition_present = any('recover' in line for line in os.popen("lsblk -f | awk 'NR>1 {print $4}' | grep -v '^$'"))
+            print("Recover partition present:", recover_partition_present)
+
+            # Verificar a presença de pacotes com prefixo 'oem'
+            oem_packages_present = any('oem' in line.split()[1] for line in os.popen("dpkg -l | grep -e '^ii'"))
+            print("OEM packages present:", oem_packages_present)
+
+            # Verificar a presença do arquivo iso-info
+            iso_info_present = os.path.exists('/etc/.iso.info')
+            print("iso-info file present:", iso_info_present)
+
+            if recover_partition_present and oem_packages_present and iso_info_present:
+                print("The system has the recovery partition.")
+                return True
+            else:
+                print("The system does not have the recovery partition.")
+                return False
+        except Exception as e:
+            # Lidar com exceções gerais
+            print(f'Erro desconhecido: {e}')
+            return False
+
+    def check_status_password(self, webkit):
+        try:
+            dbg.stdout('CheckStatusPassword', 'Verificar estado de inicialização baseado na redefinição da senha root', 1, 0)
+            command = "dpkg -l | grep oem | awk  '{print $2}' | awk 'NR==1'"
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            output_lines = result.stdout.strip().split('\n')
+            output_string = '\n'.join(output_lines)
+            policorp = "oem"
+            
+            fileStatus = "/opt/.setted-pass"
+            if output_string != policorp:
+                app.run_javascript('$("#card_password").removeClass("shake");')
+                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
+            elif not os.path.isfile(fileStatus):
+                app.run_javascript('$("#card_password").addClass("shake");')
+                app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
+            else:
+                app.run_javascript('$("#card_password").removeClass("shake");')
+                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
+
+            fileStatus = "/opt/.oem-welcome-done"
+            if not os.path.isfile(fileStatus):
+                app.run_javascript('document.getElementById("openNextStartup").checked = true;')
+            else:
+                app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+
+        except:
+            dbg.stdout('CheckStatusPassword', 'Falha ao verificar estado de inicialização baseado na redefinição da senha root', 0, 1)
+
+    def check_status_init(self, webkit, status):
+        try:
+            dbg.stdout('CheckStatusInit', 'Verificar estado de inicialização do sistema', 1, 0)
+
+            if status:
+                app.init_status = True
+            else:
+                app.init_status = False
+        except:
+            dbg.stdout('CheckStatusInit', 'Falha ao verificar estado de inicialização do sistema', 0, 1)
+    
+    # Collect basic system information
+    def run_external_command(self, command, with_shell=False):
+        if with_shell:
+            raw = str(subprocess.Popen(
+                command, stdout=subprocess.PIPE, shell=True).communicate()[0])
+        else:
+            raw = str(subprocess.Popen(
+                command, stdout=subprocess.PIPE).communicate()[0])
+        output = raw.replace("b'", "").replace(
+            'b"', "").replace("\\n'", "").replace("\\n", "")
+        return output
+
+    def run_command(self, command):
+        """Run a command and return the output."""
+        result = subprocess.run(command, shell=True, text=True, capture_output=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"Command failed with return code {result.returncode}: {result.stderr}")
+        return result.stdout
+    
+    def open_manual_pdf(self, webkit):
+        try:
+            dbg.stdout('open_manual_pdf', 'Abrindo pdf do manual do usuário', 1, 0)
+            file = "/opt/manual.pdf"
+            if os.path.exists(file):
+                subprocess.Popen(["manual-launcher"])
+            else:
+                file = "/usr/share/policorp-linux-welcome/files/Manual-Policorp-Linux-Not-OEM.pdf"
+                subprocess.Popen(["xdg-open", file])
+        except:
+            dbg.stdout('open_manual_pdf', 'Falha ao abrir pdf do manual do usuário', 0, 1)
+
+    def open_codec(self, webkit):
+        try:
+            file = "/usr/share/policorp-codecs/codec-multimedia"
+            if os.path.exists(file):
+                subprocess.Popen([file])
+        except:
+            dbg.stdout('open_manual_pdf', 'Falha ao abrir pdf do manual do usuário', 0, 1)
+
+    def open_manual_video(self, webkit):
+        try:
+            dbg.stdout('open_manual_video', 'Abrindo vídeo do manual do usuário', 1, 0)
+            video_files = [
+                "policorp-tour.mp4",
+                "policorp-tour-compaq.mp4",
+                "policorp-tour-positivo.mp4",
+                "policorp-tour-vaio.mp4"
+            ]
+            for file in video_files:
+                full_path = f"/opt/{file}"
+                if os.path.exists(full_path):
+                    subprocess.Popen(["x-www-browser", full_path])
+                    #subprocess.Popen(["xdg-open", full_path])
+                    break
+            else:
+                raise FileNotFoundError("Nenhum arquivo de vídeo encontrado em /opt/")
+        except Exception as e:
+            dbg.stdout('open_manual_video', f'Falha ao abrir vídeo do manual do usuário: {e}', 0, 1)
+
+    def open_gnome_control_center(self, webkit, panel):
+        try:
+            dbg.stdout('open_gnome_control_center', f"Abrindo {panel} do gnome_control_center", 1, 0)
+            command = f"gnome-control-center {panel}"
+            process_cmd = subprocess.Popen(command, shell=True)
+        except Exception as e:
+            dbg.stdout('open_gnome_control_center', f"Falha ao abrir {panel} do gnome_control_center: {e}", 0, 1)
+
+    def gnome_theme(self, webkit):
+        # Get selected theme
+        try:
+            settings = Gio.Settings.new("org.gnome.desktop.interface")
+            scheme = settings.get_string("color-scheme")
+
+            if scheme == "prefer-dark":
+                app.run_javascript('selectBtnDark()')
+            else:
+                app.run_javascript('selectBtnLight()')
+            return
+        except Exception as e:
+            dbg.stdout('Theme', f'color-scheme lookup failed: {e}', 0, 1)
+
+        try:
+            # Executa o comando e captura a saída
+            output = subprocess.check_output(['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme'])
+            theme = output.decode('utf-8').strip()
+            dbg.stdout('Theme', f'Tema habilitado: {theme}', 0, 3)
+            
+            if theme != "'Adwaita'":
+                app.run_javascript('selectBtnDark()')
+            else:
+                app.run_javascript('selectBtnLight()')
+
+        except:
+            dbg.stdout('Theme', 'Failed get theme', 0, 1)
+
+    def set_gnome_theme(self, webkit, theme):
+        try:
+            settings = Gio.Settings.new("org.gnome.desktop.interface")
+            if theme == "Adwaita":
+                #settings.set_string("gtk-theme", theme)
+                settings.set_string("color-scheme", "default")
+            else:
+                #settings.set_string("gtk-theme", theme)
+                settings.set_string("color-scheme", "prefer-dark")
+        except:
+            dbg.stdout('Theme', 'Failed get theme', 0, 1)
+
+    def get_system_info(self, webkit):
+        dbg.stdout('Specs', 'Gathering system specifications...', 0, 3)
+
+        time.sleep(0.5)
+
+        # Distro
+        try:
+            dbg.stdout('Specs', 'Gathering Data: Distribution', 1, 0)
+            distro_description = self.run_external_command(
+                ['lsb_release', '-ds'])
+            app.update_page('#lbl_distro', 'html', distro_description)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: Distribution', 0, 1)
+
+        # Kernel
+        try:
+            dbg.stdout('Specs', 'Gathering Data: Kernel', 1, 0)
+            kernel = self.run_external_command(['uname', '-r'])
+            app.update_page('#lbl_kernel', 'html', kernel)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: Kernel', 0, 1)
+
+        # Motherboard
+        try:
+            dbg.stdout('Specs', 'Gathering Data: Motherboard', 1, 0)
+            motherboard_name = self.run_external_command(
+                ['cat', '/sys/devices/virtual/dmi/id/board_name'])
+            app.update_page('#lbl_motherboard', 'html', motherboard_name)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: Motherboard', 0, 1)
+
+        # CPU Details
+        dbg.stdout('Specs', 'Gathering Data: CPU', 1, 0)
+        try:
+            cpu_model = self.run_external_command(
+                ['lscpu | grep -E "Model name:|Nome do modelo:" | cut -d ":" -f2 | sed \'s/^[ \t]*//\''], True)
+            app.update_page('#lbl_cpu_name', 'html', cpu_model)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: cpu_model', 0, 1)
+
+        try:
+            cpu_cores = self.run_external_command(
+                ['lscpu | grep "CPU(s):" | cut -d ":" -f2 | sed \'s/^[ \t]*//\' | head -n 1'], True)
+            app.update_page('#lbl_cores', 'html', cpu_cores)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: cpu_cores', 0, 1)
+
+        try:
+            cpu_arch = self.run_external_command(
+                    ['lscpu | grep -E "Architecture:|Arquitetura:" | cut -d ":" -f2 | sed \'s/^[ \t]*//\''], True)
+            app.update_page('#lbl_arch', 'html', cpu_arch)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: cpu_arch', 0, 1)
+
+        # Adding simple strings. Later this should be converted to translation
+        # supported strings after referring welcome app
+        gb_prefix = "GB"
+        gib_prefix = "GiB"
+        mb_prefix = "MB"
+        mib_prefix = "MiB"
+
+        try:
+            dbg.stdout('Specs', 'Gathering Data: Storage', 1, 0)
+
+            # Gather entire disk data
+            root_partition_output = self.run_command('mount | grep "on / "')
+            print('Root Partition Output:', root_partition_output)  # Debug output
+            root_partition = root_partition_output.split(' ')[0]
+
+            # Use df command to gather disk space information
+            df_output = self.run_command('df -h /')
+            df_lines = df_output.split('\n')
+
+            if len(df_lines) < 2:
+                raise ValueError('Unexpected output: Less than 2 lines from df command')
+
+            # Adjust parsing based on the output format
+            df_parts = df_lines[1].split()
+            
+            if len(df_parts) < 5:
+                raise ValueError(f'Unexpected format: {df_parts}')
+            
+            capacity_GB = df_parts[1].replace(',', '.')
+            used_GB = df_parts[2].replace(',', '.')
+            free_GB = df_parts[3].replace(',', '.')
+            used_percent = df_parts[4].replace('%', '')
+
+            # Convert sizes to GiB
+            def convert_to_gb(size_str):
+                if size_str.endswith('G'):
+                    return size_str.replace('G', '') + ' GB'
+                elif size_str.endswith('M'):
+                    return str(int(size_str.replace('M', '')) / 1024) + ' GB'
+                return size_str
+
+            capacity_GB = convert_to_gb(capacity_GB)
+            used_GB = convert_to_gb(used_GB)
+            free_GB = convert_to_gb(free_GB)
+
+            capacity = capacity_GB.replace(' GB', '')
+            capacity = float(capacity.replace(',', '.'))
+            used = used_GB.replace(' GB', '')
+            used = float(used.replace(',', '.'))
+            free = free_GB.replace(' GB', '')
+            free = float(free.replace(',', '.'))
+            other = capacity - (used + free)
+            other_percent = int((other / capacity) * 100)
+
+            free_percent = 100 - (int(used_percent) + int(other_percent))
+
+            # Append data to HTML
+            app.update_page('#lbl_filesystem', 'html', root_partition)
+            app.update_page('#lbl_capacity', 'html', capacity_GB)
+            app.update_page('#lbl_used_space', 'html', used_GB)
+            app.update_page('#lbl_free_space', 'html', free_GB)
+            app.update_page('#lbl_other_space', 'html', f'{other:.1f} GB')
+
+            app.update_page('#disk-used', 'width', f'{int(used_percent)*2}px')
+            app.update_page('#disk-free', 'width', f'{free_percent*2}px')
+            app.update_page('#disk-other', 'width', f'{(other_percent*2)}px')
+        except Exception as err:
+            print(err)
+            dbg.stdout('Specs', f'Failed to gather data: Storage {err}', 0, 1)
+        
+        # RAM
+        try:
+            dbg.stdout('Specs', 'Gathering Data: RAM (Memory)', 1, 0)
+            ram_bytes = self.run_external_command(
+                ['free -b | grep -E "Mem" '], True)
+            
+            ram_bytes = float(ram_bytes.split()[1])
+            if round(ram_bytes / 1024 / 1024) < 1024:
+                ram_xb = str(round(ram_bytes / 1000 / 1000, 1)) + \
+                             ' ' + mb_prefix
+            else:
+                ram_xb = str(round(ram_bytes / 1000 / 1000 / \
+                             1000, 1)) + ' ' + gb_prefix
+            ram_string = ram_xb
+            app.update_page('#lbl_memory', 'html', ram_string)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: RAM (Memory)', 0, 1)
+
+        # Graphics
+        app.update_page('#lbl_graphics', 'html', self.graphics_grep)
+
+        # Data cached, ready to display.
+        app.run_javascript('setCursorNormal()')
+
+    def set_password(self, webkit, mode, password):
+        dbg.stdout('Password', f'Alteração de senha do sistema', 0, 3)
+
+        if mode == "general":
+            command = f"pkexec /usr/share/policorp-linux-welcome/scripts/update-config {password} {os.getlogin()} True"
+        else:
+            command = f"pkexec /usr/share/policorp-linux-welcome/scripts/update-config {password} {os.getlogin()}"
+
+        process = subprocess.Popen(command, shell=True)
+
+        app.run_javascript('setCursorNormal()')
+
+        message = "<div class=\"text-md-center\">"
+        if self.app_view.lang_pt():
+            message += "<strong>Policorp Linux Welcome informa:</strong><br>"
+            message += "<br><br> Senha alterada com sucesso."
+        else:
+            message += "<strong>Policorp Linux Welcome informs:</strong><br>"
+            message += "<br><br> Password changed successfully."
+
+        message += "</div>"
+
+        popup = PopupMessage(message, PopupMessage.INFO)
+        popup.showMessage()
+
+    def get_exec_command(self, filepath):
+        if not os.path.isfile(filepath):
+            print(f"Arquivo '{filepath}' não encontrado.")
+            return None
+
+        with open(filepath, 'r') as file:
+            for line in file:
+                if line.startswith('Exec='):
+                    return line.strip().split('=', 1)[1]
+        return None  # Caso não encontre a linha Exec=
+
+    def open_app(self, webkit, appName):
+        dbg.stdout('OpenApp', f'Abrindo {appName}...', 0, 3)
+
+        if appName == "burnrecover":
+            caminho_arquivo = '/usr/share/applications/burnrecover.desktop'
+            comando_exec = self.get_exec_command(caminho_arquivo)
+            if not comando_exec:
+                comando_exec= "burnrecover"
+
+            if(os.path.exists("/opt/burn.lock")):
+                command = comando_exec
+                process = subprocess.Popen(command, shell=True)
+            else:
+                command = "touch /opt/burn.lock && sudo burnrecover && rm -f /opt/burn.lock"
+                process = subprocess.Popen(command, shell=True)
+        else:
+            command = "python3 /usr/share/policorp-store/src/main.py"
+            process = subprocess.Popen(command, shell=True)
+
+    def open_site(self, webkit, site):
+        dbg.stdout('OpenSite', f'Abrindo {site}...', 0, 3)
+        webbrowser.open(site)
+    
+    def open_email(self, webkit, email):
+        dbg.stdout('OpenEmail', f'Abrindo {email}...', 0, 3)
+
+        command = f"xdg-email {email}"
+        process = subprocess.Popen(command, shell=True)
+
+
+class WelcomeApp(object):
+
+    def __init__(self):
+
+        self.init_status = False
+
+        self.current_page = ""
+
+        self.hasRecover = None
+
+        # establish our location
+        self._location = os.path.dirname(
+            os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+        global start_location
+        # check for relative path
+        if (os.path.exists(os.path.join(self._location, 'data/'))):
+            self._data_path = os.path.join(self._location, 'data/')
+            start_location = self._location + "/"
+        else:
+            print('Unable to source the welcome data directory.')
+            sys.exit(1)
+
+        self._start_page = 'index.html'
+        # self._start_page = 'firstrun.html'
+        self.settings = Gio.Settings.new("org.gnome.desktop.interface")
+        self.settings.connect("changed", self.on_settings_changed)
+
+        self._build_app()
+        self.detect_system_theme()
+        thread = threading.Thread(target=self.threading_detect_system_theme)
+        thread.start()
+
+    def get_screen_resolution(self):
+        screen = Gdk.Screen.get_default()
+        width = screen.get_width()
+        height = screen.get_height()
+        return width, height
+
+    def _get_resolution(self):
+        width, height = self.get_screen_resolution()
+        return (width, height)
+        
+    def _build_app(self):
+        # Load custom css for App
+        # self._load_css()
+
+        # build window
+        w = Gtk.Window()
+        w.set_position(Gtk.WindowPosition.CENTER)
+        w.set_title("")
+
+        icon_dir = os.path.join(self._data_path, 'img', 'welcome', 'icon.svg')
+        w.set_icon_from_file(icon_dir)
+
+        # Turn window into a CSD styled application and create menu entries.
+        header = Gtk.HeaderBar(title="")
+        header.props.show_close_button = True
+        w.set_titlebar(header)
+
+        section_label = Gtk.Label()
+        page_title = Gtk.Label()
+
+        theme = Gtk.IconTheme.get_default()
+        theme.append_search_path(os.path.join(self._data_path, 'img', 'welcome'))
+        iconfile = Gio.ThemedIcon(name="icon")
+        about_img = Gtk.Image.new_from_gicon(iconfile, Gtk.IconSize.DND)
+       
+        settings = Gio.Settings.new("org.gnome.desktop.interface")
+        if settings.get_string("color-scheme") == "prefer-dark":
+            back_icon_name = "go-left-symbolic-light"
+        else:
+            back_icon_name = "go-left-symbolic"
+        
+        back_icon = Gio.ThemedIcon(name=back_icon_name)
+        back_img = Gtk.Image.new_from_gicon(back_icon, Gtk.IconSize.DND)
+        
+        iconfile = Gio.ThemedIcon(name="home")
+        home_img = Gtk.Image.new_from_gicon(iconfile, Gtk.IconSize.DND)
+
+        about_btn = Gtk.Button(image=about_img)
+        back_btn = Gtk.Button(image=back_img)
+        home_btn = Gtk.Button(image=home_img)
+
+        back_btn.set_sensitive(False)
+        back_btn.set_name("back-btn")
+        back_btn.set_visible(False)
+
+        home_btn.set_name("home-btn")
+        home_btn.set_visible(False)
+
+        about_btn.set_name("about-btn")
+        about_btn.set_can_focus(False)
+
+        header.pack_start(home_btn)
+        header.pack_start(back_btn)
+        header.pack_start(page_title)
+        header.pack_end(about_btn)
+
+        # build webkit container
+        mv = AppView()
+        width, height = self._get_resolution()
+
+        dbg.stdout('Resolution', "width " + str(width) + " height " + str(height), 0, 0)
+        if width >= 1280:
+            w.set_default_size(780, 520)
+            mv.set_zoom_level(0.9)
+        elif width <= 900:
+            w.set_default_size(580, 390)
+            mv.set_zoom_level(0.68)
+        else:
+            w.set_default_size(700, 500)
+            mv.set_zoom_level(0.83)
+
+        mv.back_btn = back_btn
+        mv.page_title = page_title
+        mv.home_btn = home_btn
+
+        about_btn.connect("clicked", self._show_about)
+
+        # load our index file
+        file = os.path.abspath(os.path.join(
+            "/usr/share/policorp-linux-welcome/data", self._start_page))
+        uri = 'file://' + urllib.request.pathname2url(file)
+        mv.load_uri(uri)
+
+        # build scrolled window widget and add our appview container
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sw.add(mv)
+
+        # build a an autoexpanding box and add our scrolled window
+        b = Gtk.Box(homogeneous=False, spacing=0)
+        b.pack_start(sw, expand=True, fill=True, padding=0)
+
+        # add the box to the parent window and show
+        w.add(b)
+        w.connect('delete-event', self.close)
+        w.show_all()
+
+        self._window = w
+        win = w
+        self.webkit = mv
+
+        self.hasRecover = systemstate.check_recover()
+
+    def run(self):
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        Gtk.main()
+
+    def _load_css(self):
+        '''
+            Load custom css to make application consistent with embedded
+            web pages
+        '''
+        style_provider = Gtk.CssProvider()
+        style_file = Gio.File.new_for_path(
+            os.path.join(self._data_path, 'css', 'app.css'))
+        style_provider.load_from_file(style_file)
+
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            style_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+    def _show_about(self, gtk_widget):
+        self.webkit._do_command("about")
+
+    def _show_status(self, gtk_widget):
+        self.webkit._do_command("status")
+
+    def close(self, p1=None, p2=None):
+        if(self.init_status):
+            command = "touch /opt/.oem-welcome-done && chmod 777 /opt/.oem-welcome-done"
+            process = subprocess.call(command, shell=True)
+        command = "dpkg -l | grep -q -e oem-data-sender"
+        process = subprocess.call(command, shell=True)
+        if(process == 0):
+            command = "echo 0 > /opt/.sender"
+            process = subprocess.call(command, shell=True)
+
+
+        
+        Gtk.main_quit(p1, p2)
+
+    def update_page(self, element, function, parm1=None, parm2=None):
+        """ Runs a JavaScript jQuery function on the page,
+            ensuring correctly parsed quotes. """
+        if parm1 and parm2:
+            self.run_javascript(
+                '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "', '" + parm2.replace("'",
+                                                                                                                '\\\'') + "')")
+        if parm1:
+            self.run_javascript(
+                '$("' + element + '").' + function + "('" + parm1.replace("'", '\\\'') + "')")
+        else:
+            self.run_javascript('$("' + element + '").' + function + '()')
+
+    def run_javascript(self, script):
+        """
+        Runs a JavaScript function on the page, regardless of which thread it is called from.
+        GTK+ operations must be performed on the same thread to prevent crashes.
+        """
+        GLib.idle_add(self._run_javascript, script)
+
+    def _run_javascript(self, script):
+        """
+        Runs a JavaScript script on the page when invoked from run_javascript()
+        """
+        self.webkit.evaluate_javascript(script, -1, None, None, None, None)
+        return GLib.SOURCE_REMOVE
+
+    def detect_system_theme(self):
+        """Detecta o tema do sistema e chama a função handle_theme_change"""
+        try:
+            with open("/proc/cmdline", "r") as f:
+                cmdline = f.read()
+            if "boot=live" in cmdline:
+                Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+                self.handle_theme_change(False)
+                return
+        except Exception:
+            pass
+        theme = self.settings.get_string("color-scheme")
+        if theme == "default":
+            Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+            self.handle_theme_change(False)
+        elif theme == "prefer-dark":
+            Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", True)
+            self.handle_theme_change(True)
+        else:
+            Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+            self.handle_theme_change(False)
+
+    def threading_detect_system_theme(self):
+        time.sleep(3)
+        theme = self.settings.get_string("color-scheme")
+        if theme == "default":
+            return
+        else:
+            self.detect_system_theme()
+
+    def handle_theme_change(self, prefer_dark_override=None):
+        if prefer_dark_override is None:
+            prefer_dark = False
+            try:
+                scheme = self.settings.get_string("color-scheme")
+            except Exception:
+                scheme = None
+
+            if scheme == "prefer-dark":
+                prefer_dark = True
+            elif scheme in ("default", "prefer-light", None):
+                prefer_dark = False
+            else:
+                prefer_dark = Gtk.Settings.get_default().get_property("gtk-application-prefer-dark-theme")
+        else:
+            prefer_dark = prefer_dark_override
+
+        js_code = """
+        (function() {
+            const enableDark = %s;
+            function applyTheme() {
+                const wrapper = document.getElementById('wrapper');
+                if (!wrapper) {
+                    window.setTimeout(applyTheme, 100);
+                    return;
+                }
+                const hasDarkClass = wrapper.classList.contains('dark-mode');
+                const storageValue = enableDark ? 'enabled' : 'disabled';
+
+                if (enableDark && !hasDarkClass) {
+                    wrapper.classList.add('dark-mode');
+                } else if (!enableDark && hasDarkClass) {
+                    wrapper.classList.remove('dark-mode');
+                }
+
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('dark-mode', storageValue);
+                }
+            }
+            applyTheme();
+        })();
+        """ % ('true' if prefer_dark else 'false')
+        self.run_javascript(js_code)
+        self.run_javascript('selectBtnDark()' if prefer_dark else 'selectBtnLight()')
+
+    def on_settings_changed(self, settings, key):
+        if key == "color-scheme":
+            new_theme = settings.get_string(key)
+            self.handle_theme_change()
+
+            if new_theme == "default":
+                Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", False)
+                icon_name = "go-left-symbolic"
+            elif new_theme == "prefer-dark":
+                Gtk.Settings.get_default().set_property("gtk-application-prefer-dark-theme", True)
+                icon_name = "go-left-symbolic-light"
+            else:
+                icon_name = "go-left-symbolic"
+
+            new_icon = Gio.ThemedIcon(name=icon_name)
+            new_image = Gtk.Image.new_from_gicon(new_icon, Gtk.IconSize.DND)
+            self.webkit.back_btn.set_image(new_image)
+
+if __name__ == "__main__":
+
+    # Process any parameters passed to the program.
+    dbg = Debug()
+
+    systemstate = SystemState()
+
+    app = WelcomeApp()
+    app.run()

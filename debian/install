@@ -1,0 +1,8 @@
+scripts/update-config /usr/share/policorp-linux-welcome/scripts/
+data/* /usr/share/policorp-linux-welcome/data/
+policorp-linux-welcome /usr/share/policorp-linux-welcome/
+sassc-compile.sh /usr/share/policorp-linux-welcome/
+policies/* /usr/share/polkit-1/actions/
+autostart/* /etc/xdg/autostart/
+icon/* /usr/share/pixmaps/
+desktop/* /usr/share/applications/
