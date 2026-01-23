@@ -1,58 +1,57 @@
-Budgie Welcome
-==============
+# Policorp Linux Welcome
 
-[![](https://opencollective.com/ubuntubudgie/tiers/backer.svg?avatarHeight=96)](https://opencollective.com/ubuntubudgie)
 
-Welcome screen application to greet new users on their first login.
+![Policorp Welcome](data/img/policorp-welcome.png)
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-white.svg)](https://snapcraft.io/ubuntu-budgie-welcome)
 
-### Translators
+O **Policorp Linux Welcome** é uma aplicação de boas-vindas desenvolvida para orientar novos utilizadores no seu primeiro login no sistema Policorp Linux. A aplicação fornece acesso rápido a recursos úteis, configurações do sistema, manuais e ferramentas de recuperação.
 
-We need to translate budgie-welcome into your language/locale.  Please
-help-out - visit:
 
-https://www.transifex.com/ubuntu-budgie/budgie-welcome/
+## Funcionalidades
+* **Detecção de Ambiente:** Ajusta automaticamente o conteúdo dependendo se o sistema está a correr em modo *Live* ou instalado.
+* **Temas:** Suporte a temas Claro e Escuro, detectados automaticamente através das configurações do GNOME (`org.gnome.desktop.interface`).
+* **Informações do Sistema:** Exibe detalhes sobre o hardware, distribuição e estado da bateria.
+* **Ferramentas:** Links rápidos para configuração de utilizadores, backups e recuperação do sistema.
 
-### Installation
 
-```sh
-sudo apt install gir1.2-webkit2-4.0 python3-notify2 node-uglify sassc
-git clone https://github.com/UbuntuBudgie/budgie-welcome.git
+## Mantenedor
+* **Edson Drosdeck** <edson.drosdeck@policorp.com.br>
+* **Website:** [www.policorp.com.br](https://www.policorp.com.br)
 
-cd budgie-welcome
+## Instalação e Dependências
+As dependências necessárias para a execução do projeto estão listadas no ficheiro de controlo Debian.
 
-uglifyjs -o data/js/bootstrap.min.js data/js/bootstrap.js
-uglifyjs -o data/js/baguetteBox.min.js data/js/baguetteBox.js
-uglifyjs -o data/js/popper.min.js data/js/popper.js
+
+### Dependências de Execução
+gir1.2-gtk-3.0
+gir1.2-webkit2-4.1
+pkexec
+python3
+python3-apt
+python3-gi
+python3-notify2
+xdotool
+whois
+
+
+# Instalação para Desenvolvimento
+- 1. Instalar dependências do sistema
+
+sudo apt install gir1.2-webkit2-4.1 python3-notify2 python3-apt xdotool whois sassc
+
+- 2. Clonar o repositório
+
+git clone [https://github.com/policorp-dev/policorp-welcome.git](https://github.com/policorp-dev/policorp-welcome.git)
+
+cd policorp-welcome
+
+- 3. Compilar os ficheiros CSS (Sass)
 
 bash sassc-compile.sh
-```
 
-### Testing
+./policorp-linux-welcome
 
-```sh
-cd budgie-welcome
-./budgie-welcome -d
-```
 
-To test the live session
-
-    ./budgie-welcome --force-session=live -d
-    
-To test a language or locale
-
-    ./budgie-welcome --locale=pl
-    
-change "pl" to your language i18n shortcode
-
-### Screenshot
-#### Live session
-![Screenshot of Budgie Remix Welcome App](https://raw.githubusercontent.com/UbuntuBudgie/budgie-welcome/master/screenshot-live-session.png)
-
-#### Normal session
-![Screenshot of Budgie Remix Welcome App](https://raw.githubusercontent.com/UbuntuBudgie/budgie-welcome/master/screenshot-normal-session.png)
-
-### LICENSES
-  The project contains files with a variety of licenses.
-  For the complete list of licenses, see [debian/copyright](https://github.com/budgie-remix/budgie-welcome/blob/master/debian/copyright) file.
+# Licença
+- Este projeto é software livre; pode redistribuí-lo e/ou modificá-lo sob os termos da GNU General Public License (GPL) versão 2 ou superior.
+- Consulte o ficheiro debian/copyright incluído neste repositório para mais detalhes.
