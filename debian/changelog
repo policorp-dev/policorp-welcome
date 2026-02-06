@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-19) stable; urgency=medium
+
+  * alterado icon
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Fri, 14 Nov 2025 15:22:25 +0000
+
 policorp-linux-welcome (2.0.Policorp-18) stable; urgency=medium
 
   * Adicionando correcao para inversao de temas
