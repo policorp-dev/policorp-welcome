@@ -541,6 +541,7 @@ class SystemState(object):
             dbg.stdout('open_manual_video', 'Abrindo vídeo do manual do usuário', 1, 0)
             video_files = [
                 "policorp-tour.mp4",
+                "policorp-tour-oem.mp4",
                 "policorp-tour-compaq.mp4",
                 "policorp-tour-positivo.mp4",
                 "policorp-tour-vaio.mp4"
