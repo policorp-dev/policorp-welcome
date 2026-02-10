@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-20) stable; urgency=medium
+
+  * correcao do nome do video para oem
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Tue, 10 Feb 2026 18:05:12 -0300
+
 policorp-linux-welcome (2.0.Policorp-19) stable; urgency=medium
 
   * alterado icon
