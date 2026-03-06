@@ -490,10 +490,19 @@ class SystemState(object):
         try:
             dbg.stdout('CheckStatusInit', 'Verificar estado de inicialização do sistema', 1, 0)
 
-            if status:
-                app.init_status = True
-            else:
+            status_str = str(status).strip().lower()
+            open_on_next_startup = status_str in ("1", "true", "yes", "on")
+            marker_file = "/opt/.oem-welcome-done"
+
+            if open_on_next_startup:
                 app.init_status = False
+                if os.path.isfile(marker_file):
+                    os.remove(marker_file)
+            else:
+                app.init_status = True
+                with open(marker_file, 'a'):
+                    os.utime(marker_file, None)
+                os.chmod(marker_file, 0o777)
         except:
             dbg.stdout('CheckStatusInit', 'Falha ao verificar estado de inicialização do sistema', 0, 1)
     
