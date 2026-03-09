@@ -22,6 +22,7 @@ import signal
 import os
 import inspect
 import time
+import fcntl
 
 try:
     import distro
@@ -33,6 +34,23 @@ except:
 start_location = "./"  # path defined on app startup
 
 win = None
+single_instance_lock = None
+
+def acquire_single_instance_lock():
+    global single_instance_lock
+
+    lock_path = '/tmp/policorp-linux-welcome.lock'
+
+    try:
+        lock_handle = open(lock_path, 'w')
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return False
+
+    lock_handle.write(str(os.getpid()))
+    lock_handle.flush()
+    single_instance_lock = lock_handle
+    return True
 
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
@@ -1135,6 +1153,10 @@ class WelcomeApp(object):
             self.webkit.back_btn.set_image(new_image)
 
 if __name__ == "__main__":
+
+    if not acquire_single_instance_lock():
+        print('Policorp Linux Welcome is already running.')
+        sys.exit(0)
 
     # Process any parameters passed to the program.
     dbg = Debug()
