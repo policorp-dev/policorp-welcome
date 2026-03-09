@@ -663,6 +663,24 @@ class SystemState(object):
         except:
             dbg.stdout('Specs', 'Failed to gather data: Motherboard', 0, 1)
 
+        # System Vendor
+        try:
+            dbg.stdout('Specs', 'Gathering Data: System Vendor', 1, 0)
+            sys_vendor_raw = self.run_external_command(
+                ['cat', '/sys/class/dmi/id/sys_vendor'])
+            
+            if 'VAIO' in sys_vendor_raw:
+                sys_vendor = 'VAIO'
+            elif 'Positivo' in sys_vendor_raw:
+                sys_vendor = 'Positivo Tecnologia SA'
+            else:
+                sys_vendor = sys_vendor_raw
+            
+            app.update_page('#lbl_sys_vendor', 'html', sys_vendor)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: System Vendor', 0, 1)
+            app.update_page('#lbl_sys_vendor', 'html', 'Policorp Tecnologia')
+
         # CPU Details
         dbg.stdout('Specs', 'Gathering Data: CPU', 1, 0)
         try:
