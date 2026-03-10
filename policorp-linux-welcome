@@ -101,6 +101,9 @@ class AppView(WebKit2.WebView):
     def _push_config(self):
         current_page = app.current_page.replace(".html", "")
 
+        if current_page == "":
+            current_page = "index"
+
         if "?" in current_page:
             current_page = current_page.replace("?", "")
 
@@ -1018,7 +1021,9 @@ class WelcomeApp(object):
 
         about_btn.connect("clicked", self._show_about)
 
-        # load our index file - logo do vendor já aplicada no HTML antes de carregar
+        self.hasRecover = systemstate.check_recover()
+
+        # load our index file
         file = os.path.join(self._data_path, self._start_page)
         with open(file, 'r', encoding='utf-8') as f:
             html_content = f.read()
@@ -1046,8 +1051,6 @@ class WelcomeApp(object):
         self._window = w
         win = w
         self.webkit = mv
-
-        self.hasRecover = systemstate.check_recover()
 
     def run(self):
         signal.signal(signal.SIGINT, signal.SIG_DFL)

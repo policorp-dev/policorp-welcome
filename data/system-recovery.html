@@ -24,11 +24,37 @@
 			      recuperação para restaurar a máquina em caso de problemas."></p>
 		    <p class="animated text-md-justify fadeInUp ml-4 mr-4 mb-4" data-lang-en="This procedure should take approximately 10 minutes." data-lang-pt="Esse procedimento deve levar aproximadamente 10 minutos."></p>
 		    <p class="animated text-md-justify fadeInUp ml-4 mr-4 mb-5" data-lang-en="Do you want to create recovery media now?" data-lang-pt="Deseja criar uma mídia de recuperação agora?"></p>
+		    <button class="btn btn-link btn-sm mb-3" type="button" onclick="openRecoveryInfo()" data-lang-en="Learn more" data-lang-pt="Saiba mais"></button>
 		    <button id="btn_burnrecover" class="btn btn-success btn-lg w-100 mb-5" type="button" onclick="openApp('btn_burnrecover', 'burnrecover')" data-lang-en="YES" data-lang-pt="SIM"> </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal" id="recoveryInfoModal" tabindex="-1" role="dialog" aria-labelledby="recoveryInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recoveryInfoModalLabel" data-lang-en="About Recovery Media" data-lang-pt="Sobre a Mídia de Recuperação"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left">
+                          <p data-lang-en="Recovery media is a Pen Drive USB that lets you perform a factory reinstall if the system stops working correctly."
+                              data-lang-pt="A mídia de recuperação é um Pen Drive USB que permite fazer uma reinstalação de fábrica caso o sistema pare de funcionar corretamente."></p>
+                          <p data-lang-en="Before starting, use an empty Pen Drive USB and keep your computer connected to power during the process."
+                              data-lang-pt="Antes de iniciar, use um Pen Drive USB vazio e mantenha o computador conectado à energia durante o processo."></p>
+                    <p class="mb-0" data-lang-en="After creation, keep this media in a safe place for future emergencies."
+                       data-lang-pt="Após a criação, mantenha essa mídia em um local seguro para futuras emergências."></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-lang-en="Understood" data-lang-pt="Entendi"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/jquery-2.1.4.js"></script>
     <script src="js/tether.js"></script>
     <script src="js/bootstrap.min.js"></script>
