@@ -109,6 +109,10 @@ class AppView(WebKit2.WebView):
 
         # Dynamically toggle header controls button
         if current_page != "index":
+            self.back_btn.set_visible(True)
+            self.page_title.set_visible(True)
+            self.home_btn.set_visible(False)
+
             if not self.back_btn.is_sensitive():
                 self.back_signal_handler = self.back_btn.connect(
                         "clicked", self._back_action)
@@ -118,6 +122,10 @@ class AppView(WebKit2.WebView):
             if self.back_signal_handler:
                 self.back_btn.disconnect(self.back_signal_handler)
                 self.back_signal_handler = None
+
+            self.back_btn.set_visible(False)
+            self.page_title.set_visible(False)
+            self.home_btn.set_visible(True)
             self.back_btn.set_sensitive(False)
 
             if app.hasRecover:

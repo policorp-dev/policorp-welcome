@@ -2,6 +2,6 @@
 Type=Application
 Name=Policorp Linux Welcome
 Exec=/bin/sh -c '[ -e /opt/.oem-welcome-done ] && exit 0; exec /usr/share/policorp-linux-welcome/policorp-linux-welcome'
-Icon=/usr/share/policorp-linux-welcome/data/img/welcome/icon.svg
+Icon=home
 NoDisplay=true
 X-GNOME-Autostart-Phase=Applications
