@@ -64,6 +64,7 @@ class AppView(WebKit2.WebView):
         self.connect('load-changed', self._load_changed_cb)
         self.connect('notify::title', self._title_changed_cb)
         self.connect('context-menu', self._context_menu_cb)
+        self.connect('decide-policy', self._decide_policy_cb)
 
         self.l_uri = None
         self.back_btn = None
@@ -71,6 +72,25 @@ class AppView(WebKit2.WebView):
         self.home_btn = None
 
         self.back_signal_handler = None
+
+    def _decide_policy_cb(self, view, decision, decision_type):
+        if decision_type == WebKit2.PolicyDecisionType.NAVIGATION_ACTION:
+            uri = decision.get_navigation_action().get_request().get_uri()
+            if uri.endswith('/index.html'):
+                try:
+                    with open(os.path.join(app._data_path, 'index.html'), 'r', encoding='utf-8') as f:
+                        html = f.read()
+                    html = html.replace(
+                        'src="img/welcome/ubuntu-budgie-wordmark.svg"',
+                        f'src="img/welcome/{app._vendor_logo}"'
+                    )
+                    base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(app._data_path)) + '/'
+                    decision.ignore()
+                    self.load_html(html, base_uri)
+                    return True
+                except Exception:
+                    pass
+        return False
 
     def _back_action(self, data):
         app.run_javascript("smoothPageFade('index.html')")
@@ -892,6 +912,7 @@ class WelcomeApp(object):
         self.settings = Gio.Settings.new("org.gnome.desktop.interface")
         self.settings.connect("changed", self.on_settings_changed)
 
+        self._vendor_logo = self._detect_vendor_logo()
         self._build_app()
         self.detect_system_theme()
         thread = threading.Thread(target=self.threading_detect_system_theme)
@@ -907,6 +928,19 @@ class WelcomeApp(object):
         width, height = self.get_screen_resolution()
         return (width, height)
         
+    def _detect_vendor_logo(self):
+        """Determina o arquivo de logo correto com base no fabricante do sistema."""
+        try:
+            with open('/sys/class/dmi/id/sys_vendor', 'r') as f:
+                vendor = f.read().strip()
+            if 'VAIO' in vendor:
+                return 'vaio.png'
+            elif 'Positivo' in vendor:
+                return 'positivo logo.svg'
+        except:
+            pass
+        return 'ubuntu-budgie-wordmark.svg'
+
     def _build_app(self):
         # Load custom css for App
         # self._load_css()
@@ -984,11 +1018,16 @@ class WelcomeApp(object):
 
         about_btn.connect("clicked", self._show_about)
 
-        # load our index file
-        file = os.path.abspath(os.path.join(
-            "/usr/share/policorp-linux-welcome/data", self._start_page))
-        uri = 'file://' + urllib.request.pathname2url(file)
-        mv.load_uri(uri)
+        # load our index file - logo do vendor já aplicada no HTML antes de carregar
+        file = os.path.join(self._data_path, self._start_page)
+        with open(file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        html_content = html_content.replace(
+            'src="img/welcome/ubuntu-budgie-wordmark.svg"',
+            f'src="img/welcome/{self._vendor_logo}"'
+        )
+        base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(self._data_path)) + '/'
+        mv.load_html(html_content, base_uri)
 
         # build scrolled window widget and add our appview container
         sw = Gtk.ScrolledWindow()
