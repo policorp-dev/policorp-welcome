@@ -1,3 +1,15 @@
+policorp-linux-welcome (2.0.Policorp-21) stable; urgency=medium
+
+  * banner com título neutro
+  * Informações do sistemas personalizado por dispositivo
+  * Botão "Saiba mais" na tela de recover
+  * Ajustes na opção de inicializar com o sistema
+  * Trocar do ícone da aplicação
+  * Redes sociais personalizadas por dispositivo
+  * Ajuste no fluxo de troca de senha do administrador
+
+ -- Edson Juliano Drosdeck <edson@policorp.com.br>  Wed, 11 Mar 2026 11:53:13 -0300
+
 policorp-linux-welcome (2.0.Policorp-20) stable; urgency=medium
 
   * correcao do nome do video para oem

@@ -1,1 +1,8 @@
 .vscode
+debian/.debhelper
+debian/policorp-linux-welcome
+debian/*.log
+debian/*-build-stamp
+debian/files
+debian/*.substvars
+scripts/update-config
