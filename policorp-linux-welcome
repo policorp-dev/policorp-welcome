@@ -78,12 +78,7 @@ class AppView(WebKit2.WebView):
             uri = decision.get_navigation_action().get_request().get_uri()
             if uri.endswith('/index.html'):
                 try:
-                    with open(os.path.join(app._data_path, 'index.html'), 'r', encoding='utf-8') as f:
-                        html = f.read()
-                    html = html.replace(
-                        'src="img/welcome/ubuntu-budgie-wordmark.svg"',
-                        f'src="img/welcome/{app._vendor_logo}"'
-                    )
+                    html = app._get_index_html_content()
                     base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(app._data_path)) + '/'
                     decision.ignore()
                     self.load_html(html, base_uri)
@@ -697,12 +692,11 @@ class SystemState(object):
         # System Vendor
         try:
             dbg.stdout('Specs', 'Gathering Data: System Vendor', 1, 0)
-            sys_vendor_raw = self.run_external_command(
-                ['cat', '/sys/class/dmi/id/sys_vendor'])
+            sys_vendor_raw = app._sys_vendor_raw
             
-            if 'VAIO' in sys_vendor_raw:
+            if app._vendor_profile == 'vaio':
                 sys_vendor = 'VAIO'
-            elif 'Positivo' in sys_vendor_raw:
+            elif app._vendor_profile == 'positivo':
                 sys_vendor = 'Positivo Tecnologia SA'
             else:
                 sys_vendor = sys_vendor_raw
@@ -923,7 +917,11 @@ class WelcomeApp(object):
         self.settings = Gio.Settings.new("org.gnome.desktop.interface")
         self.settings.connect("changed", self.on_settings_changed)
 
+        self._sys_vendor_raw = self._read_sys_vendor()
+        self._vendor_profile = self._classify_vendor(self._sys_vendor_raw)
         self._vendor_logo = self._detect_vendor_logo()
+        self._vendor_access_link = self._get_vendor_access_link()
+        self._vendor_social_links = self._get_vendor_social_links()
         self._build_app()
         self.detect_system_theme()
         thread = threading.Thread(target=self.threading_detect_system_theme)
@@ -938,18 +936,74 @@ class WelcomeApp(object):
     def _get_resolution(self):
         width, height = self.get_screen_resolution()
         return (width, height)
+
+    def _read_sys_vendor(self):
+        try:
+            with open('/sys/class/dmi/id/sys_vendor', 'r') as f:
+                return f.read().strip()
+        except:
+            return 'Policorp Tecnologia'
+
+    def _classify_vendor(self, vendor_raw):
+        if 'VAIO' in vendor_raw:
+            return 'vaio'
+        if 'Positivo' in vendor_raw:
+            return 'positivo'
+        return 'policorp'
+
+    def _get_vendor_social_links(self):
+        if self._vendor_profile == 'vaio':
+            return {
+                'linkedin': 'https://www.linkedin.com/company/vaio-corporation/',
+                'youtube': 'https://www.youtube.com/@VaioBrasil'
+            }
+        if self._vendor_profile == 'positivo':
+            return {
+                'linkedin': 'https://www.linkedin.com/company/positivo-tecnologia/posts/?feedView=all',
+                'youtube': 'https://www.youtube.com/@maispositivotecnologia'
+            }
+        return {
+            'linkedin': 'https://br.linkedin.com/company/policorp-tecnologia',
+            'youtube': 'https://www.youtube.com/@policorptecnologia'
+        }
+
+    def _get_vendor_access_link(self):
+        if self._vendor_profile == 'vaio':
+            return 'https://www.br.vaio.com/'
+        if self._vendor_profile == 'positivo':
+            return 'https://loja.meupositivo.com.br/'
+        return 'https://www.policorp.com.br/faq'
+
+    def _get_index_html_content(self):
+        file = os.path.join(self._data_path, self._start_page)
+        with open(file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+
+        html_content = html_content.replace(
+            'src="img/welcome/ubuntu-budgie-wordmark.svg"',
+            f'src="img/welcome/{self._vendor_logo}"'
+        )
+        html_content = html_content.replace(
+            'https://br.linkedin.com/company/policorp-tecnologia',
+            self._vendor_social_links['linkedin']
+        )
+        html_content = html_content.replace(
+            'https://www.youtube.com/@policorptecnologia',
+            self._vendor_social_links['youtube']
+        )
+        html_content = html_content.replace(
+            'data-access-url="https://www.policorp.com.br/faq"',
+            f'data-access-url="{self._vendor_access_link}"'
+        )
+
+        return html_content
         
     def _detect_vendor_logo(self):
         """Determina o arquivo de logo correto com base no fabricante do sistema."""
-        try:
-            with open('/sys/class/dmi/id/sys_vendor', 'r') as f:
-                vendor = f.read().strip()
-            if 'VAIO' in vendor:
-                return 'vaio.png'
-            elif 'Positivo' in vendor:
-                return 'positivo logo.svg'
-        except:
-            pass
+        if self._vendor_profile == 'vaio':
+            return 'vaio.png'
+        elif self._vendor_profile == 'positivo':
+            return 'positivo logo.svg'
         return 'ubuntu-budgie-wordmark.svg'
 
     def _build_app(self):
@@ -1032,13 +1086,7 @@ class WelcomeApp(object):
         self.hasRecover = systemstate.check_recover()
 
         # load our index file
-        file = os.path.join(self._data_path, self._start_page)
-        with open(file, 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        html_content = html_content.replace(
-            'src="img/welcome/ubuntu-budgie-wordmark.svg"',
-            f'src="img/welcome/{self._vendor_logo}"'
-        )
+        html_content = self._get_index_html_content()
         base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(self._data_path)) + '/'
         mv.load_html(html_content, base_uri)
 
