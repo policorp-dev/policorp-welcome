@@ -504,28 +504,63 @@ class SystemState(object):
     def check_status_password(self, webkit):
         try:
             dbg.stdout('CheckStatusPassword', 'Verificar estado de inicialização baseado na redefinição da senha root', 1, 0)
-            command = "dpkg -l | grep oem | awk  '{print $2}' | awk 'NR==1'"
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
-            output_lines = result.stdout.strip().split('\n')
-            output_string = '\n'.join(output_lines)
-            policorp = "oem"
             
-            fileStatus = "/opt/.setted-pass"
-            if output_string != policorp:
-                app.run_javascript('$("#card_password").removeClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
-            elif not os.path.isfile(fileStatus):
-                app.run_javascript('$("#card_password").addClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
-            else:
-                app.run_javascript('$("#card_password").removeClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
+            if self.check_recover():
+                password_status_file = "/opt/.setted-pass"
+                startup_marker_file = "/opt/.oem-welcome-done"
 
-            fileStatus = "/opt/.oem-welcome-done"
-            if not os.path.isfile(fileStatus):
-                app.run_javascript('document.getElementById("openNextStartup").checked = true;')
+                default_hover_en = "After changing the password, you can disable this box so BREAK that this application does not appear on future startups"
+                default_hover_pt = "Após trocar a senha você poderá desabilitar está BREAK caixa para que essa aplicação não apareça nas próximas inicializações."
+                security_hover_en = "For security reasons, after changing the administrator password BREAK it is not recommended that this program opens automatically."
+                security_hover_pt = "Por questões de segurança, após trocar a senha do administrador BREAK não é recomendado que esse programa seja aberto automaticamente."
+
+                if not os.path.isfile(password_status_file):
+                    app.run_javascript('$("#card_password").addClass("shake");')
+                    app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
+                    if not os.path.isfile(startup_marker_file):
+                        app.run_javascript('document.getElementById("openNextStartup").checked = true;')
+                    else:
+                        app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+
+                    app.run_javascript('''
+                        (function () {
+                            const hoverBox = document.querySelector('#openStartup .hover-box');
+                            if (!hoverBox) return;
+                            const textEn = "'''+default_hover_en+'''";
+                            const textPt = "'''+default_hover_pt+'''";
+                            hoverBox.setAttribute('data-lang-en', textEn);
+                            hoverBox.setAttribute('data-lang-pt', textPt);
+                            const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+                            const activeText = lang.startsWith('pt') ? textPt : textEn;
+                            hoverBox.innerHTML = activeText.replace(/BREAK/g, '<br>');
+                        })();
+                    ''')
+                else:
+                    app.run_javascript('$("#card_password").removeClass("shake");')
+                    app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+                    app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
+                    app.init_status = True
+
+                    app.run_javascript('''
+                        (function () {
+                            const hoverBox = document.querySelector('#openStartup .hover-box');
+                            if (!hoverBox) return;
+                            const textEn = "'''+security_hover_en+'''";
+                            const textPt = "'''+security_hover_pt+'''";
+                            hoverBox.setAttribute('data-lang-en', textEn);
+                            hoverBox.setAttribute('data-lang-pt', textPt);
+                            const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+                            const activeText = lang.startsWith('pt') ? textPt : textEn;
+                            hoverBox.innerHTML = activeText.replace(/BREAK/g, '<br>');
+                        })();
+                    ''')
+
+                    if not os.path.isfile(startup_marker_file):
+                        with open(startup_marker_file, 'a'):
+                            os.utime(startup_marker_file, None)
+                        os.chmod(startup_marker_file, 0o777)
             else:
-                app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+                dbg.stdout('CheckStatusPassword', 'Sistema não é OEM - senha alterável apenas para sistemas OEM', 0, 1)
 
         except:
             dbg.stdout('CheckStatusPassword', 'Falha ao verificar estado de inicialização baseado na redefinição da senha root', 0, 1)
@@ -537,16 +572,24 @@ class SystemState(object):
             status_str = str(status).strip().lower()
             open_on_next_startup = status_str in ("1", "true", "yes", "on")
             marker_file = "/opt/.oem-welcome-done"
+            password_status_file = "/opt/.setted-pass"
 
             if open_on_next_startup:
                 app.init_status = False
                 if os.path.isfile(marker_file):
                     os.remove(marker_file)
+                app.run_javascript('document.getElementById("openNextStartup").checked = true;')
+                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
             else:
                 app.init_status = True
                 with open(marker_file, 'a'):
                     os.utime(marker_file, None)
                 os.chmod(marker_file, 0o777)
+                app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+                if os.path.isfile(password_status_file):
+                    app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
+                else:
+                    app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
         except:
             dbg.stdout('CheckStatusInit', 'Falha ao verificar estado de inicialização do sistema', 0, 1)
     
