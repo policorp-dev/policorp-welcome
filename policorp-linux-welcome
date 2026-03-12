@@ -509,8 +509,8 @@ class SystemState(object):
                 password_status_file = "/opt/.setted-pass"
                 startup_marker_file = "/opt/.oem-welcome-done"
 
-                default_hover_en = "After changing the password, you can disable this box so BREAK that this application does not appear on future startups"
-                default_hover_pt = "Após trocar a senha você poderá desabilitar está BREAK caixa para que essa aplicação não apareça nas próximas inicializações."
+                default_hover_en = "Keep checked if you want this window to BREAK open again when you restart the device."
+                default_hover_pt = "Deixe marcado caso queira que essa janela BREAK abra novamente ao reiniciar o dispositivo."
                 security_hover_en = "For security reasons, after changing the administrator password BREAK it is not recommended that this program opens automatically."
                 security_hover_pt = "Por questões de segurança, após trocar a senha do administrador BREAK não é recomendado que esse programa seja aberto automaticamente."
 
