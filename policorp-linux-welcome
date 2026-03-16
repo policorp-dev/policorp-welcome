@@ -207,7 +207,6 @@ class AppView(WebKit2.WebView):
                 self.page_title.set_visible(True)
                 self.home_btn.set_visible(False)
         elif uri == 'about':
-            distroname = "Debian 13"
             message = "<div class=\"text-md-center\">"
             message += "<strong>Policorp Linux Welcome</strong><br>"
             if self.lang_pt():
@@ -219,10 +218,19 @@ class AppView(WebKit2.WebView):
                         systemstate.app_version
                         )
 
-            message += "<br><br> Policorp Tecnolgia Ltda"
-            message += "<br><br>Policorp Linux ({})".format(
-                distroname
-            )
+            if app._vendor_profile == 'vaio':
+                company_name = "VAIO"
+            elif app._vendor_profile == 'positivo':
+                company_name = "Positivo Tecnologia SA"
+            else:
+                company_name = "Policorp Tecnologia Ltda"
+
+            message += "<br><br> {}".format(company_name)
+            if app._vendor_profile in ('vaio', 'positivo'):
+                product_name = "Policorp Linux OEM 13.1"
+            else:
+                product_name = "Policorp Linux 13.1"
+            message += "<br><br>{}".format(product_name)
 
             message += "</div>"
 
@@ -741,6 +749,10 @@ class SystemState(object):
                 sys_vendor = 'VAIO'
             elif app._vendor_profile == 'positivo':
                 sys_vendor = 'Positivo Tecnologia SA'
+            elif 'VAIO' in sys_vendor_raw.upper():
+                sys_vendor = 'VAIO'
+            elif 'POSITIVO' in sys_vendor_raw.upper():
+                sys_vendor = 'Positivo Tecnologia SA'
             else:
                 sys_vendor = sys_vendor_raw
             
@@ -988,10 +1000,16 @@ class WelcomeApp(object):
             return 'Policorp Tecnologia'
 
     def _classify_vendor(self, vendor_raw):
-        if 'VAIO' in vendor_raw:
-            return 'vaio'
-        if 'Positivo' in vendor_raw:
-            return 'positivo'
+        try:
+            if subprocess.run('dpkg -l | grep -q oem-vaio', shell=True).returncode == 0:
+                return 'vaio'
+        except Exception:
+            pass
+        try:
+            if subprocess.run('dpkg -l | grep -q oem-positivo', shell=True).returncode == 0:
+                return 'positivo'
+        except Exception:
+            pass
         return 'policorp'
 
     def _get_vendor_social_links(self):
