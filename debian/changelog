@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-22) stable; urgency=medium
+
+  * remoção de ícones da Policorp
+
+ -- Carlos Eduardo Obristo <carlos.eduardo@policorp.com.br>  Wed, 16 Mar 2026 14:47:13 -0300
+
 policorp-linux-welcome (2.0.Policorp-21) stable; urgency=medium
 
   * banner com título neutro
@@ -8,7 +14,7 @@ policorp-linux-welcome (2.0.Policorp-21) stable; urgency=medium
   * Redes sociais personalizadas por dispositivo
   * Ajuste no fluxo de troca de senha do administrador
 
- -- Edson Juliano Drosdeck <edson@policorp.com.br>  Wed, 11 Mar 2026 11:53:13 -0300
+ -- Carlos Eduardo Obristo <carlos.eduardo@policorp.com.br>  Wed, 11 Mar 2026 11:53:13 -0300
 
 policorp-linux-welcome (2.0.Policorp-20) stable; urgency=medium
 
