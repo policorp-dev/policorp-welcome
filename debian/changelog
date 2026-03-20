@@ -1,8 +1,10 @@
 policorp-linux-welcome (2.0.Policorp-22) stable; urgency=medium
 
   * remoção de ícones da Policorp
+  * ajuste na inicialização com o sistema
+  * ajuste na troca de senhas
 
- -- Carlos Eduardo Obristo <carlos.eduardo@policorp.com.br>  Wed, 16 Mar 2026 14:47:13 -0300
+ -- Carlos Eduardo Obristo <carlos.eduardo@policorp.com.br>  Wed, 20 Mar 2026 09:15:25 -0300
 
 policorp-linux-welcome (2.0.Policorp-21) stable; urgency=medium
 
