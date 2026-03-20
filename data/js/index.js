@@ -137,16 +137,3 @@ function openVideoTour() {
     }, 3000);
 }
 
-var checkbox = document.getElementById('openNextStartup');
-
-checkbox.addEventListener('change', function () {
-    var checkboxRef = this;
-
-    setTimeout(function () {
-        if (checkboxRef.checked) {
-            cmd('check-status-init=true');
-        } else {
-            cmd('check-status-init=false');
-        }
-    }, 50);
-});

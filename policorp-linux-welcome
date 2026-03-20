@@ -239,9 +239,6 @@ class AppView(WebKit2.WebView):
             popup.showMessage()
         elif uri == 'check-init-main':
             systemstate.check_status_password(self)
-        elif 'check-status-init=' in uri:
-            status = uri.replace('check-status-init=', '')
-            systemstate.check_status_init(self, status)
         elif uri == 'init-manual-pdf':
             systemstate.open_manual_pdf(self)
         elif uri == 'init-codec':
@@ -426,7 +423,7 @@ class SystemState(object):
             self.boot_mode = 'BIOS'
 
         # Multithread to prevent holding up program execution.
-        Thread(target=self.detect_graphics).start()
+        Thread(target=self.detect_graphics, daemon=True).start()
 
         # Retain some show/hide actions applied while changing page.
         # This is specially required when page change happens while
@@ -517,51 +514,19 @@ class SystemState(object):
                 password_status_file = "/opt/.setted-pass"
                 startup_marker_file = "/opt/.oem-welcome-done"
 
-                default_hover_en = "Keep checked if you want this window to BREAK open again when you restart the device."
-                default_hover_pt = "Deixe marcado caso queira que essa janela BREAK abra novamente ao reiniciar o dispositivo."
-                security_hover_en = "For security reasons, after changing the administrator password BREAK it is not recommended that this program opens automatically."
-                security_hover_pt = "Por questões de segurança, após trocar a senha do administrador BREAK não é recomendado que esse programa seja aberto automaticamente."
-
                 if not os.path.isfile(password_status_file):
                     app.run_javascript('$("#card_password").addClass("shake");')
-                    app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
-                    if not os.path.isfile(startup_marker_file):
-                        app.run_javascript('document.getElementById("openNextStartup").checked = true;')
-                    else:
-                        app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+                    app.run_javascript('document.getElementById("passwordWarning").style.display = "block";')
 
-                    app.run_javascript('''
-                        (function () {
-                            const hoverBox = document.querySelector('#openStartup .hover-box');
-                            if (!hoverBox) return;
-                            const textEn = "'''+default_hover_en+'''";
-                            const textPt = "'''+default_hover_pt+'''";
-                            hoverBox.setAttribute('data-lang-en', textEn);
-                            hoverBox.setAttribute('data-lang-pt', textPt);
-                            const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-                            const activeText = lang.startsWith('pt') ? textPt : textEn;
-                            hoverBox.innerHTML = activeText.replace(/BREAK/g, '<br>');
-                        })();
-                    ''')
+                    # Keep opening at startup until password is changed.
+                    if os.path.isfile(startup_marker_file):
+                        os.remove(startup_marker_file)
+
+                    app.init_status = False
                 else:
                     app.run_javascript('$("#card_password").removeClass("shake");')
-                    app.run_javascript('document.getElementById("openNextStartup").checked = false;')
-                    app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
+                    app.run_javascript('document.getElementById("passwordWarning").style.display = "none";')
                     app.init_status = True
-
-                    app.run_javascript('''
-                        (function () {
-                            const hoverBox = document.querySelector('#openStartup .hover-box');
-                            if (!hoverBox) return;
-                            const textEn = "'''+security_hover_en+'''";
-                            const textPt = "'''+security_hover_pt+'''";
-                            hoverBox.setAttribute('data-lang-en', textEn);
-                            hoverBox.setAttribute('data-lang-pt', textPt);
-                            const lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-                            const activeText = lang.startsWith('pt') ? textPt : textEn;
-                            hoverBox.innerHTML = activeText.replace(/BREAK/g, '<br>');
-                        })();
-                    ''')
 
                     if not os.path.isfile(startup_marker_file):
                         with open(startup_marker_file, 'a'):
@@ -569,38 +534,11 @@ class SystemState(object):
                         os.chmod(startup_marker_file, 0o777)
             else:
                 dbg.stdout('CheckStatusPassword', 'Sistema não é OEM - senha alterável apenas para sistemas OEM', 0, 1)
+                app.run_javascript('document.getElementById("passwordWarning").style.display = "none";')
 
         except:
             dbg.stdout('CheckStatusPassword', 'Falha ao verificar estado de inicialização baseado na redefinição da senha root', 0, 1)
 
-    def check_status_init(self, webkit, status):
-        try:
-            dbg.stdout('CheckStatusInit', 'Verificar estado de inicialização do sistema', 1, 0)
-
-            status_str = str(status).strip().lower()
-            open_on_next_startup = status_str in ("1", "true", "yes", "on")
-            marker_file = "/opt/.oem-welcome-done"
-            password_status_file = "/opt/.setted-pass"
-
-            if open_on_next_startup:
-                app.init_status = False
-                if os.path.isfile(marker_file):
-                    os.remove(marker_file)
-                app.run_javascript('document.getElementById("openNextStartup").checked = true;')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
-            else:
-                app.init_status = True
-                with open(marker_file, 'a'):
-                    os.utime(marker_file, None)
-                os.chmod(marker_file, 0o777)
-                app.run_javascript('document.getElementById("openNextStartup").checked = false;')
-                if os.path.isfile(password_status_file):
-                    app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
-                else:
-                    app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
-        except:
-            dbg.stdout('CheckStatusInit', 'Falha ao verificar estado de inicialização do sistema', 0, 1)
-    
     # Collect basic system information
     def run_external_command(self, command, with_shell=False):
         if with_shell:
@@ -979,7 +917,7 @@ class WelcomeApp(object):
         self._vendor_social_links = self._get_vendor_social_links()
         self._build_app()
         self.detect_system_theme()
-        thread = threading.Thread(target=self.threading_detect_system_theme)
+        thread = threading.Thread(target=self.threading_detect_system_theme, daemon=True)
         thread.start()
 
     def get_screen_resolution(self):
@@ -1129,13 +1067,13 @@ class WelcomeApp(object):
 
         dbg.stdout('Resolution', "width " + str(width) + " height " + str(height), 0, 0)
         if width >= 1280:
-            w.set_default_size(780, 520)
+            w.set_default_size(840, 580)
             mv.set_zoom_level(0.9)
         elif width <= 900:
-            w.set_default_size(580, 390)
+            w.set_default_size(640, 450)
             mv.set_zoom_level(0.68)
         else:
-            w.set_default_size(700, 500)
+            w.set_default_size(760, 560)
             mv.set_zoom_level(0.83)
 
         mv.back_btn = back_btn
@@ -1196,6 +1134,41 @@ class WelcomeApp(object):
         self.webkit._do_command("status")
 
     def close(self, p1=None, p2=None):
+        if self.hasRecover and (not os.path.isfile('/opt/.setted-pass')):
+            if self.webkit.lang_pt():
+                message = 'Você ainda não trocou a senha do administrador.'
+                details = ('Por segurança, troque a senha e anote-a em local seguro. '
+                           'Este aplicativo continuará abrindo na inicialização '
+                           'até que a senha seja alterada.')
+                close_label = 'Fechar'
+                change_label = 'Trocar senha'
+            else:
+                message = 'You have not changed the administrator password yet.'
+                details = ('For security reasons, change the password and store it in a safe place. '
+                           'This app will continue to open at startup '
+                           'until the password is changed.')
+                close_label = 'Close'
+                change_label = 'Change password'
+
+            dialog = Gtk.MessageDialog(
+                transient_for=self._window,
+                flags=Gtk.DialogFlags.MODAL,
+                message_type=Gtk.MessageType.WARNING,
+                buttons=Gtk.ButtonsType.NONE,
+                text=message
+            )
+            dialog.format_secondary_text(details)
+            dialog.add_button(close_label, Gtk.ResponseType.CLOSE)
+            dialog.add_button(change_label, Gtk.ResponseType.APPLY)
+            dialog.set_default_response(Gtk.ResponseType.APPLY)
+
+            response = dialog.run()
+            dialog.destroy()
+
+            if response == Gtk.ResponseType.APPLY:
+                self.run_javascript("smoothPageFade('system-password.html')")
+                return True
+
         if(self.init_status):
             command = "touch /opt/.oem-welcome-done && chmod 777 /opt/.oem-welcome-done"
             process = subprocess.call(command, shell=True)
@@ -1205,9 +1178,8 @@ class WelcomeApp(object):
             command = "echo 0 > /opt/.sender"
             process = subprocess.call(command, shell=True)
 
-
-        
-        Gtk.main_quit(p1, p2)
+        Gtk.main_quit()
+        return False
 
     def update_page(self, element, function, parm1=None, parm2=None):
         """ Runs a JavaScript jQuery function on the page,

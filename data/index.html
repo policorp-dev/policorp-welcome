@@ -101,15 +101,21 @@
                 </div>
             </div>
             <div class="row mt-2 mb-2">
-                <div class="col-5 btn-showcase text-md-center">
-			<div class="form-check fade fade-5s hvr-shadow" id="openStartup">
-                        <input class="form-check-input" type="checkbox" value="" id="openNextStartup" checked>
-                        <label class="form-check-label" for="openNextStartup" data-lang-en="Open at next startup" data-lang-pt="Abrir na próxima inicialização"> </label>
-			<div class="hover-box" data-lang-en="Keep checked if you want this window to BREAK open again when you restart the device." data-lang-pt="Deixe marcado caso queira que essa janela BREAK abra novamente ao reiniciar o dispositivo."></div>
+                <div class="col-12 col-md-6 offset-md-3">
+                    <div class="alert alert-warning fade fade-5s" id="passwordWarning" role="alert" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <span class="material-icons mr-2" style="font-size: 18px;">warning</span>
+                            <div>
+                                <strong data-lang-en="Important:" data-lang-pt="Importante:"></strong>
+                                <span data-lang-en=" Please change and save your administrator password." data-lang-pt=" Por favor, altere e anote a senha do administrador."></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-2"></div>
-                <div class="col-5 btn-showcase text-md-center" id="senderBox">
+            </div>
+
+            <div class="row mt-2 mb-2">
+                <div class="col-12 col-md-6 offset-md-3 text-center" id="senderBox">
                     <div class="form-check fade fade-5s hvr-shadow">
                         <input class="form-check-input" type="checkbox" value="" id="sendDataToRecord" checked>
                         <label class="form-check-label" for="sendDataToRecord" data-lang-en="Send system information" data-lang-pt="Enviar informações do Sistema"></label>
