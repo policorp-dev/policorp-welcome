@@ -15,3 +15,11 @@ function openApp(id, appName) {
         setCursorNormal();
     }, 1500);
 }
+
+function openRecoveryInfo() {
+    $('#recoveryInfoModal').modal({
+        backdrop: true,
+        keyboard: true,
+        show: true
+    });
+}

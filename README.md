@@ -37,20 +37,45 @@ whois
 # Instalação para Desenvolvimento
 - 1. Instalar dependências do sistema
 
+```
 sudo apt install gir1.2-webkit2-4.1 python3-notify2 python3-apt xdotool whois sassc
+```
 
 - 2. Clonar o repositório
 
+```
 git clone [https://github.com/policorp-dev/policorp-welcome.git](https://github.com/policorp-dev/policorp-welcome.git)
-
 cd policorp-welcome
+```
 
 - 3. Compilar os ficheiros CSS (Sass)
 
+```
 bash sassc-compile.sh
+```
 
+- 4. Rodar script localmente
+
+```
 ./policorp-linux-welcome
+```
 
+# Criação do pacote
+
+- 1. Instale as depências necessárias
+
+```
+sudo apt update
+sudo apt install devscripts
+```
+
+- 2. Crie o pacote .deb
+
+```
+debuild -uc -us -d
+```
+
+O pacote `policorp-linux-welcome_2.0.Policorp-*_amd64.deb` será gerado.
 
 # Licença
 - Este projeto é software livre; pode redistribuí-lo e/ou modificá-lo sob os termos da GNU General Public License (GPL) versão 2 ou superior.

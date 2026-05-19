@@ -22,6 +22,7 @@ import signal
 import os
 import inspect
 import time
+import fcntl
 
 try:
     import distro
@@ -33,6 +34,23 @@ except:
 start_location = "./"  # path defined on app startup
 
 win = None
+single_instance_lock = None
+
+def acquire_single_instance_lock():
+    global single_instance_lock
+
+    lock_path = '/tmp/policorp-linux-welcome.lock'
+
+    try:
+        lock_handle = open(lock_path, 'w')
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return False
+
+    lock_handle.write(str(os.getpid()))
+    lock_handle.flush()
+    single_instance_lock = lock_handle
+    return True
 
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
@@ -46,6 +64,7 @@ class AppView(WebKit2.WebView):
         self.connect('load-changed', self._load_changed_cb)
         self.connect('notify::title', self._title_changed_cb)
         self.connect('context-menu', self._context_menu_cb)
+        self.connect('decide-policy', self._decide_policy_cb)
 
         self.l_uri = None
         self.back_btn = None
@@ -53,6 +72,20 @@ class AppView(WebKit2.WebView):
         self.home_btn = None
 
         self.back_signal_handler = None
+
+    def _decide_policy_cb(self, view, decision, decision_type):
+        if decision_type == WebKit2.PolicyDecisionType.NAVIGATION_ACTION:
+            uri = decision.get_navigation_action().get_request().get_uri()
+            if uri.endswith('/index.html'):
+                try:
+                    html = app._get_index_html_content()
+                    base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(app._data_path)) + '/'
+                    decision.ignore()
+                    self.load_html(html, base_uri)
+                    return True
+                except Exception:
+                    pass
+        return False
 
     def _back_action(self, data):
         app.run_javascript("smoothPageFade('index.html')")
@@ -63,11 +96,18 @@ class AppView(WebKit2.WebView):
     def _push_config(self):
         current_page = app.current_page.replace(".html", "")
 
+        if current_page == "":
+            current_page = "index"
+
         if "?" in current_page:
             current_page = current_page.replace("?", "")
 
         # Dynamically toggle header controls button
         if current_page != "index":
+            self.back_btn.set_visible(True)
+            self.page_title.set_visible(True)
+            self.home_btn.set_visible(False)
+
             if not self.back_btn.is_sensitive():
                 self.back_signal_handler = self.back_btn.connect(
                         "clicked", self._back_action)
@@ -77,6 +117,10 @@ class AppView(WebKit2.WebView):
             if self.back_signal_handler:
                 self.back_btn.disconnect(self.back_signal_handler)
                 self.back_signal_handler = None
+
+            self.back_btn.set_visible(False)
+            self.page_title.set_visible(False)
+            self.home_btn.set_visible(True)
             self.back_btn.set_sensitive(False)
 
             if app.hasRecover:
@@ -163,7 +207,6 @@ class AppView(WebKit2.WebView):
                 self.page_title.set_visible(True)
                 self.home_btn.set_visible(False)
         elif uri == 'about':
-            distroname = "Debian 13"
             message = "<div class=\"text-md-center\">"
             message += "<strong>Policorp Linux Welcome</strong><br>"
             if self.lang_pt():
@@ -175,10 +218,19 @@ class AppView(WebKit2.WebView):
                         systemstate.app_version
                         )
 
-            message += "<br><br> Policorp Tecnolgia Ltda"
-            message += "<br><br>Policorp Linux ({})".format(
-                distroname
-            )
+            if app._vendor_profile == 'vaio':
+                company_name = "VAIO"
+            elif app._vendor_profile == 'positivo':
+                company_name = "Positivo Tecnologia SA"
+            else:
+                company_name = "Policorp Tecnologia Ltda"
+
+            message += "<br><br> {}".format(company_name)
+            if app._vendor_profile in ('vaio', 'positivo'):
+                product_name = "Policorp Linux OEM 13.1"
+            else:
+                product_name = "Policorp Linux 13.1"
+            message += "<br><br>{}".format(product_name)
 
             message += "</div>"
 
@@ -187,9 +239,6 @@ class AppView(WebKit2.WebView):
             popup.showMessage()
         elif uri == 'check-init-main':
             systemstate.check_status_password(self)
-        elif 'check-status-init=' in uri:
-            status = uri.replace('check-status-init=', '')
-            systemstate.check_status_init(self, status)
         elif uri == 'init-manual-pdf':
             systemstate.open_manual_pdf(self)
         elif uri == 'init-codec':
@@ -374,7 +423,7 @@ class SystemState(object):
             self.boot_mode = 'BIOS'
 
         # Multithread to prevent holding up program execution.
-        Thread(target=self.detect_graphics).start()
+        Thread(target=self.detect_graphics, daemon=True).start()
 
         # Retain some show/hide actions applied while changing page.
         # This is specially required when page change happens while
@@ -460,43 +509,45 @@ class SystemState(object):
     def check_status_password(self, webkit):
         try:
             dbg.stdout('CheckStatusPassword', 'Verificar estado de inicialização baseado na redefinição da senha root', 1, 0)
-            command = "dpkg -l | grep oem | awk  '{print $2}' | awk 'NR==1'"
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
-            output_lines = result.stdout.strip().split('\n')
-            output_string = '\n'.join(output_lines)
-            policorp = "oem"
             
-            fileStatus = "/opt/.setted-pass"
-            if output_string != policorp:
-                app.run_javascript('$("#card_password").removeClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
-            elif not os.path.isfile(fileStatus):
-                app.run_javascript('$("#card_password").addClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = true;')
-            else:
-                app.run_javascript('$("#card_password").removeClass("shake");')
-                app.run_javascript('document.getElementById("openNextStartup").disabled = false;')
+            if self.check_recover():
+                password_status_file = "/opt/.setted-pass"
+                startup_marker_file = "/opt/.oem-welcome-done"
 
-            fileStatus = "/opt/.oem-welcome-done"
-            if not os.path.isfile(fileStatus):
-                app.run_javascript('document.getElementById("openNextStartup").checked = true;')
+                if not os.path.isfile(password_status_file):
+                    app.run_javascript('$("#card_password").addClass("shake");')
+                    app.run_javascript('document.getElementById("passwordWarning").style.display = "block";')
+
+                    # Keep opening at startup until password is changed.
+                    if os.path.isfile(startup_marker_file):
+                        os.remove(startup_marker_file)
+
+                    app.init_status = False
+                else:
+                    app.run_javascript('$("#card_password").removeClass("shake");')
+                    app.run_javascript('document.getElementById("passwordWarning").style.display = "none";')
+                    app.init_status = True
+
+                    if not os.path.isfile(startup_marker_file):
+                        with open(startup_marker_file, 'a'):
+                            os.utime(startup_marker_file, None)
+                        os.chmod(startup_marker_file, 0o777)
             else:
-                app.run_javascript('document.getElementById("openNextStartup").checked = false;')
+                startup_marker_file = "/opt/.oem-welcome-done"
+
+                # Non-OEM systems should not relaunch this app on next startup.
+                if not os.path.isfile(startup_marker_file):
+                    with open(startup_marker_file, 'a'):
+                        os.utime(startup_marker_file, None)
+                    os.chmod(startup_marker_file, 0o777)
+
+                app.init_status = True
+                dbg.stdout('CheckStatusPassword', 'Sistema não é OEM - inicialização automática desativada', 0, 1)
+                app.run_javascript('document.getElementById("passwordWarning").style.display = "none";')
 
         except:
             dbg.stdout('CheckStatusPassword', 'Falha ao verificar estado de inicialização baseado na redefinição da senha root', 0, 1)
 
-    def check_status_init(self, webkit, status):
-        try:
-            dbg.stdout('CheckStatusInit', 'Verificar estado de inicialização do sistema', 1, 0)
-
-            if status:
-                app.init_status = True
-            else:
-                app.init_status = False
-        except:
-            dbg.stdout('CheckStatusInit', 'Falha ao verificar estado de inicialização do sistema', 0, 1)
-    
     # Collect basic system information
     def run_external_command(self, command, with_shell=False):
         if with_shell:
@@ -635,6 +686,27 @@ class SystemState(object):
             app.update_page('#lbl_motherboard', 'html', motherboard_name)
         except:
             dbg.stdout('Specs', 'Failed to gather data: Motherboard', 0, 1)
+
+        # System Vendor
+        try:
+            dbg.stdout('Specs', 'Gathering Data: System Vendor', 1, 0)
+            sys_vendor_raw = app._sys_vendor_raw
+            
+            if app._vendor_profile == 'vaio':
+                sys_vendor = 'VAIO'
+            elif app._vendor_profile == 'positivo':
+                sys_vendor = 'Positivo Tecnologia SA'
+            elif 'VAIO' in sys_vendor_raw.upper():
+                sys_vendor = 'VAIO'
+            elif 'POSITIVO' in sys_vendor_raw.upper():
+                sys_vendor = 'Positivo Tecnologia SA'
+            else:
+                sys_vendor = sys_vendor_raw
+            
+            app.update_page('#lbl_sys_vendor', 'html', sys_vendor)
+        except:
+            dbg.stdout('Specs', 'Failed to gather data: System Vendor', 0, 1)
+            app.update_page('#lbl_sys_vendor', 'html', 'Policorp Tecnologia')
 
         # CPU Details
         dbg.stdout('Specs', 'Gathering Data: CPU', 1, 0)
@@ -847,9 +919,14 @@ class WelcomeApp(object):
         self.settings = Gio.Settings.new("org.gnome.desktop.interface")
         self.settings.connect("changed", self.on_settings_changed)
 
+        self._sys_vendor_raw = self._read_sys_vendor()
+        self._vendor_profile = self._classify_vendor(self._sys_vendor_raw)
+        self._vendor_logo = self._detect_vendor_logo()
+        self._vendor_access_link = self._get_vendor_access_link()
+        self._vendor_social_links = self._get_vendor_social_links()
         self._build_app()
         self.detect_system_theme()
-        thread = threading.Thread(target=self.threading_detect_system_theme)
+        thread = threading.Thread(target=self.threading_detect_system_theme, daemon=True)
         thread.start()
 
     def get_screen_resolution(self):
@@ -861,7 +938,82 @@ class WelcomeApp(object):
     def _get_resolution(self):
         width, height = self.get_screen_resolution()
         return (width, height)
+
+    def _read_sys_vendor(self):
+        try:
+            with open('/sys/class/dmi/id/sys_vendor', 'r') as f:
+                return f.read().strip()
+        except:
+            return 'Policorp Tecnologia'
+
+    def _classify_vendor(self, vendor_raw):
+        try:
+            if subprocess.run('dpkg -l | grep -q oem-vaio', shell=True).returncode == 0:
+                return 'vaio'
+        except Exception:
+            pass
+        try:
+            if subprocess.run('dpkg -l | grep -q oem-positivo', shell=True).returncode == 0:
+                return 'positivo'
+        except Exception:
+            pass
+        return 'policorp'
+
+    def _get_vendor_social_links(self):
+        if self._vendor_profile == 'vaio':
+            return {
+                'linkedin': 'https://www.linkedin.com/company/vaio-corporation/',
+                'youtube': 'https://www.youtube.com/@VaioBrasil'
+            }
+        if self._vendor_profile == 'positivo':
+            return {
+                'linkedin': 'https://www.linkedin.com/company/positivo-tecnologia/posts/?feedView=all',
+                'youtube': 'https://www.youtube.com/@maispositivotecnologia'
+            }
+        return {
+            'linkedin': 'https://br.linkedin.com/company/policorp-tecnologia',
+            'youtube': 'https://www.youtube.com/@policorptecnologia'
+        }
+
+    def _get_vendor_access_link(self):
+        if self._vendor_profile == 'vaio':
+            return 'https://www.br.vaio.com/'
+        if self._vendor_profile == 'positivo':
+            return 'https://loja.meupositivo.com.br/'
+        return 'https://www.policorp.com.br/faq'
+
+    def _get_index_html_content(self):
+        file = os.path.join(self._data_path, self._start_page)
+        with open(file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+
+        html_content = html_content.replace(
+            'src="img/welcome/ubuntu-budgie-wordmark.svg"',
+            f'src="img/welcome/{self._vendor_logo}"'
+        )
+        html_content = html_content.replace(
+            'https://br.linkedin.com/company/policorp-tecnologia',
+            self._vendor_social_links['linkedin']
+        )
+        html_content = html_content.replace(
+            'https://www.youtube.com/@policorptecnologia',
+            self._vendor_social_links['youtube']
+        )
+        html_content = html_content.replace(
+            'data-access-url="https://www.policorp.com.br/faq"',
+            f'data-access-url="{self._vendor_access_link}"'
+        )
+
+        return html_content
         
+    def _detect_vendor_logo(self):
+        """Determina o arquivo de logo correto com base no fabricante do sistema."""
+        if self._vendor_profile == 'vaio':
+            return 'vaio.png'
+        elif self._vendor_profile == 'positivo':
+            return 'positivo logo.svg'
+        return 'ubuntu-budgie-wordmark.svg'
+
     def _build_app(self):
         # Load custom css for App
         # self._load_css()
@@ -924,13 +1076,13 @@ class WelcomeApp(object):
 
         dbg.stdout('Resolution', "width " + str(width) + " height " + str(height), 0, 0)
         if width >= 1280:
-            w.set_default_size(780, 520)
+            w.set_default_size(840, 580)
             mv.set_zoom_level(0.9)
         elif width <= 900:
-            w.set_default_size(580, 390)
+            w.set_default_size(640, 450)
             mv.set_zoom_level(0.68)
         else:
-            w.set_default_size(700, 500)
+            w.set_default_size(760, 560)
             mv.set_zoom_level(0.83)
 
         mv.back_btn = back_btn
@@ -939,11 +1091,12 @@ class WelcomeApp(object):
 
         about_btn.connect("clicked", self._show_about)
 
+        self.hasRecover = systemstate.check_recover()
+
         # load our index file
-        file = os.path.abspath(os.path.join(
-            "/usr/share/policorp-linux-welcome/data", self._start_page))
-        uri = 'file://' + urllib.request.pathname2url(file)
-        mv.load_uri(uri)
+        html_content = self._get_index_html_content()
+        base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(self._data_path)) + '/'
+        mv.load_html(html_content, base_uri)
 
         # build scrolled window widget and add our appview container
         sw = Gtk.ScrolledWindow()
@@ -962,8 +1115,6 @@ class WelcomeApp(object):
         self._window = w
         win = w
         self.webkit = mv
-
-        self.hasRecover = systemstate.check_recover()
 
     def run(self):
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -992,6 +1143,41 @@ class WelcomeApp(object):
         self.webkit._do_command("status")
 
     def close(self, p1=None, p2=None):
+        if self.hasRecover and (not os.path.isfile('/opt/.setted-pass')):
+            if self.webkit.lang_pt():
+                message = 'Você ainda não trocou a senha do administrador.'
+                details = ('Por segurança, troque a senha e anote-a em local seguro. '
+                           'Este aplicativo continuará abrindo na inicialização '
+                           'até que a senha seja alterada.')
+                close_label = 'Fechar'
+                change_label = 'Trocar senha'
+            else:
+                message = 'You have not changed the administrator password yet.'
+                details = ('For security reasons, change the password and store it in a safe place. '
+                           'This app will continue to open at startup '
+                           'until the password is changed.')
+                close_label = 'Close'
+                change_label = 'Change password'
+
+            dialog = Gtk.MessageDialog(
+                transient_for=self._window,
+                flags=Gtk.DialogFlags.MODAL,
+                message_type=Gtk.MessageType.WARNING,
+                buttons=Gtk.ButtonsType.NONE,
+                text=message
+            )
+            dialog.format_secondary_text(details)
+            dialog.add_button(close_label, Gtk.ResponseType.CLOSE)
+            dialog.add_button(change_label, Gtk.ResponseType.APPLY)
+            dialog.set_default_response(Gtk.ResponseType.APPLY)
+
+            response = dialog.run()
+            dialog.destroy()
+
+            if response == Gtk.ResponseType.APPLY:
+                self.run_javascript("smoothPageFade('system-password.html')")
+                return True
+
         if(self.init_status):
             command = "touch /opt/.oem-welcome-done && chmod 777 /opt/.oem-welcome-done"
             process = subprocess.call(command, shell=True)
@@ -1001,9 +1187,8 @@ class WelcomeApp(object):
             command = "echo 0 > /opt/.sender"
             process = subprocess.call(command, shell=True)
 
-
-        
-        Gtk.main_quit(p1, p2)
+        Gtk.main_quit()
+        return False
 
     def update_page(self, element, function, parm1=None, parm2=None):
         """ Runs a JavaScript jQuery function on the page,
@@ -1126,6 +1311,10 @@ class WelcomeApp(object):
             self.webkit.back_btn.set_image(new_image)
 
 if __name__ == "__main__":
+
+    if not acquire_single_instance_lock():
+        print('Policorp Linux Welcome is already running.')
+        sys.exit(0)
 
     # Process any parameters passed to the program.
     dbg = Debug()

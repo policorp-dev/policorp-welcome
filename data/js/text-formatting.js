@@ -45,9 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
         textElements.forEach(function(element) {
             // Pega o conteúdo do atributo data-lang-{language}
             const text = element.getAttribute(`data-lang-${language}`);
+            const accessUrl = element.getAttribute('data-access-url') || 'https://www.policorp.com.br/faq';
 
             // Substitui BREAK pelo elemento <a> com onclick e id
-            const replacedText = text.replace(/BREAK/g, `<a onclick="openSite('btn_suport', 'https://www.policorp.com.br/faq')" id="btn_suport" style="color: white;">https://www.policorp.com.br/faq</a>`);
+            const replacedText = text.replace(/BREAK/g, `<a onclick="openSite('btn_suport', '${accessUrl}')" id="btn_suport" style="color: white;">${accessUrl}</a>`);
 
             // Atualiza o conteúdo do elemento com o texto modificado
             element.innerHTML = replacedText;

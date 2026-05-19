@@ -14,150 +14,166 @@
   <div id="wrapper">
     <div id="title-inject">Informações do Sistema </div>
     <button id="theme-toggle" style="display:none;">Toggle Theme</button>
-    <div id="content" class="container entire-page-fade">
+    <div id="content" class="container-fluid entire-page-fade specs-content">
       <!--Body content-->
-      <div class="tab-contents" id="specs-basic">
-        <div id="specs-icon">
-          <img class="specs-icon" id="specs-device-normal" src="img/welcome/distro-laptop.png" />
-        </div>
-        <div id="specs-box">
-		<h4 class="text-primary"><span class="fa fa-cog"></span><p data-lang-en="System" data-lang-pt="Sistema"></p> </h4>
-          <table class="shortcuts">
-            <tr>
-              <th class="color-texts-system">Distro: </th>
-              <td class="specs-sel-text"><span id="lbl_distro" class="color-texts-system"></span></td>
-            </tr>
-            <tr>
-              <th class="color-texts-system">Kernel: </th>
-              <td class="specs-sel-text">
-                <span id="lbl_kernel" class="color-texts-system"></span>
-                <a data-toggle="tooltip" data-placement="right"
-                  title="O kernel do Linux é o núcleo do Debian.">
-                  <i class="material-icons"></i>
-                </a>
-              </td>
-            </tr>
-            <tr class="specs-hide-vbox specs-hide-pi">
-		    <th class="color-texts-system" data-lang-en="Motherboard:" data-lang-pt="Placa-mãe:"> </th>
-              <td class="specs-sel-text"><span id="lbl_motherboard" class="color-texts-system"></span></td>
-            </tr>
-          </table>
-          <br>
-
-	  <h4 class="text-primary"><span class="fa fa-bolt"></span> <p data-lang-en="CPU" data-lang-pt="Processador"></p></h4>
-          <table class="shortcuts">
-            <tr>
-		    <th class="color-texts-system" data-lang-en="Model:" data-lang-pt="Modelo:"> </th>
-              <td class="specs-sel-text"><span id="lbl_cpu_name" class="color-texts-system"></span></td>
-            </tr>
-            <tr>
-		    <th class="color-texts-system" data-lang-en="Core(s):" data-lang-pt="Núcleo(s):"> </th>
-              <td class="specs-sel-text"><span id="lbl_cores" class="color-texts-system"></span></td>
-            </tr>
-            <tr>
-		    <th class="color-texts-system" data-lang-en="Architecture in use:" data-lang-pt="Arquitetura em uso:"> </th>
-              <td class="specs-sel-text">
-                <span id="lbl_arch" class="color-texts-system"></span>
-                <a data-toggle="tooltip" data-placement="right" class="color-texts-system"
-                  title="A arquitetura do sistema operacional em uso. Por exemplo, i386 = 32 bits.">
-                  <i class="material-icons"></i>
-                </a>
-              </td>
-            </tr>
-          </table>
-          <br>
-
-	  <h4 class="text-primary"><span class="fa fa-plug"></span> <p data-lang-en="Components" data-lang-pt="Componentes"></p></h4>
-          <table class="shortcuts">
-            <tr>
-		    <th class="color-texts-system" data-lang-en="RAM:" data-lang-pt="Memória RAM:"></th>
-              <td class="specs-sel-text">
-                <span id="lbl_memory" class="color-texts-system"></span>
-                <a data-toggle="tooltip" data-placement="right" class="color-texts-system"
-                  title="Mais RAM permite que mais aplicativos sejam executados simultaneamente.">
-                  <i class="material-icons"></i>
-                </a>
-              </td>
-            </tr>
-            <tr class="specs-hide-vbox specs-hide-pi">
-              <th class="color-texts-system" data-lang-en="Graphics:" data-lang-pt="Gráficos:"</th>
-              <td class="specs-sel-text"><span id="lbl_graphics" class="color-texts-system"></span></td>
-            </tr>
-          </table>
-          <br>
-
-          <div class="specs-hide-live normal-session-only">
-		  <h4 class="text-primary"><span class="fa fa-hdd-o"></span><p data-lang-en="Storage" data-lang-pt="Armazenamento"></p></h4>
-
-            <table class="shortcuts">
-              <tr>
-		      <th class="color-texts-system" data-lang-en="Root Directory:" data-lang-pt="Diretório Root:"></th>
-                <td class="specs-sel-text">
-                  <span id="lbl_filesystem" class="color-texts-system"></span>
-                  <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
-                    title="O diretório root é onde o sistema operacional está instalado."> <i
-                      class="material-icons"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-		      <th class="color-texts-system" data-lang-en="Capacity:" data-lang-pt="Capacidade:"> </th>
-                <td>
-                  <span id="lbl_capacity" class="color-texts-system"></span>
-                  <br>
-                  <div id="disk-usage">
-                    <a id="disk-allocated" class="disk-line" style="width:auto" data-toggle="tooltip"
-                      data-placement="bottom" title="Uso do SO">
-                      <div id="disk-used" class="disk-line" style="width:0px" class="color-texts-system"></div>
-                      <div id="disk-free" class="disk-line" style="width:0px" class="color-texts-system"></div>
-                    </a>
-                    <a id="disk-other" class="disk-line" style="width:0px" data-toggle="tooltip" data-placement="bottom" class="color-texts-system"
-                      title="Outros uso"></a>
+        <div class="tab-contents" id="specs-basic">
+          <div id="specs-box">
+            <!-- Linha superior: Imagem (esquerda) + Sistema (direita) -->
+            <div class="row specs-grid">
+              <div class="col-6 specs-col specs-icon-col">
+                <div id="specs-icon">
+                  <img class="specs-icon" id="specs-device-normal" src="img/welcome/distro-laptop.png" />
+                </div>
+              </div>
+              <div class="col-6 specs-col">
+                <div class="specs-section">
+                  <h4 class="text-primary"><span class="fa fa-cog"></span><p data-lang-en="System" data-lang-pt="Sistema"></p></h4>
+                  <table class="shortcuts">
+                    <tr>
+                      <th class="color-texts-system">Distro: </th>
+                      <td class="specs-sel-text"><span id="lbl_distro" class="color-texts-system"></span></td>
+                    </tr>
+                    <tr>
+                      <th class="color-texts-system">Kernel: </th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_kernel" class="color-texts-system"></span>
+                        <a data-toggle="tooltip" data-placement="right" title="O kernel do Linux é o núcleo do Debian.">
+                          <i class="material-icons"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Enterprise:" data-lang-pt="Empresa:"> </th>
+                      <td class="specs-sel-text"><span id="lbl_sys_vendor" class="color-texts-system"></span></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- Linha inferior: Processador + Componentes (esquerda) + Armazenamento (direita) -->
+            <div class="row specs-grid">
+              <div class="col-6 specs-col">
+                <div class="specs-section">
+                  <h4 class="text-primary"><span class="fa fa-bolt"></span> <p data-lang-en="CPU" data-lang-pt="Processador"></p></h4>
+                  <table class="shortcuts">
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Model:" data-lang-pt="Modelo:"> </th>
+                      <td class="specs-sel-text"><span id="lbl_cpu_name" class="color-texts-system"></span></td>
+                    </tr>
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Core(s):" data-lang-pt="Núcleo(s):"> </th>
+                      <td class="specs-sel-text"><span id="lbl_cores" class="color-texts-system"></span></td>
+                    </tr>
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Architecture:" data-lang-pt="Arquitetura:"> </th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_arch" class="color-texts-system"></span>
+                        <a data-toggle="tooltip" data-placement="right" class="color-texts-system"
+                          title="A arquitetura do sistema operacional em uso. Por exemplo, i386 = 32 bits.">
+                          <i class="material-icons"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  <div class="specs-section">
+                    <h4 class="text-primary"><span class="fa fa-plug"></span> <p data-lang-en="Components" data-lang-pt="Componentes"></p></h4>
+                    <table class="shortcuts">
+                      <tr class="specs-hide-vbox specs-hide-pi">
+                        <th class="color-texts-system" data-lang-en="Motherboard:" data-lang-pt="Placa-mãe:"> </th>
+                        <td class="specs-sel-text"><span id="lbl_motherboard" class="color-texts-system"></span></td>
+                      </tr>
+                      <tr>
+                        <th class="color-texts-system" data-lang-en="RAM:" data-lang-pt="Memória RAM:"></th>
+                        <td class="specs-sel-text">
+                          <span id="lbl_memory" class="color-texts-system"></span>
+                          <a data-toggle="tooltip" data-placement="right" class="color-texts-system"
+                            title="Mais RAM permite que mais aplicativos sejam executados simultaneamente.">
+                            <i class="material-icons"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr class="specs-hide-vbox specs-hide-pi">
+                        <th class="color-texts-system" data-lang-en="Graphics:" data-lang-pt="Gráficos:"></th>
+                        <td class="specs-sel-text"><span id="lbl_graphics" class="color-texts-system"></span></td>
+                      </tr>
+                    </table>
                   </div>
-                </td>
-              </tr>
-              <tr>
-		      <th class="color-texts-system" data-lang-en="Allocated:" data-lang-pt="Espaço Alocado:"></th>
-                <td class="specs-sel-text">
-                  <span id="lbl_allocated_space" class="color-texts-system"></span>
-                  <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
-                    title="O tamanho da partição do seu sistema operacional.">
-                    <i class="material-icons"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th class="color-texts-system">
-			<div class="disk-legend" style="background-color: #87A556"></div> <p data-lang-en="Used:" data-lang-pt="Usado:"</p>
-                </th>
-                <td class="specs-sel-text">
-                  <span id="lbl_used_space" class="color-texts-system"></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="color-texts-system">
-			<div class="disk-legend" style="background-color: #C2D3A6"></div> <p data-lang-en="Free:" data-lang-pt="Livre:"></p>
-                </th>
-                <td class="specs-sel-text">
-                  <span id="lbl_free_space" class="color-texts-system"></span>
-                </td>
-              </tr>
-              <tr>
-                <th class="color-texts-system">
-			<div class="disk-legend" style="background-color: #484848;"></div> <p data-lang-en="Others:" data-lang-pt="Outros:"></p>
-                </th>
-                <td class="specs-sel-text">
-                  <span id="lbl_other_space" class="color-texts-system"></span>
-                  <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
-                    title="Reservado pelo sistema, outras partições, não alocado ou swap.">
-                    <i class="material-icons"></i>
-                  </a>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div> <!-- end of content -->
-      </div> <!-- end of wrapper -->
+                </div>
+              </div>
+              <div class="col-6 specs-col">
+                <div class="specs-section specs-hide-live normal-session-only">
+                  <h4 class="text-primary"><span class="fa fa-hdd-o"></span><p data-lang-en="Storage" data-lang-pt="Armazenamento"></p></h4>
+                  <table class="shortcuts shortcuts-storage">
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Root Directory:" data-lang-pt="Diretório Root:"></th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_filesystem" class="color-texts-system"></span>
+                        <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
+                          title="O diretório root é onde o sistema operacional está instalado.">
+                          <i class="material-icons"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="color-texts-system" data-lang-en="Capacity:" data-lang-pt="Capacidade:"> </th>
+                      <td>
+                        <span id="lbl_capacity" class="color-texts-system"></span>
+                        <br>
+                        <div id="disk-usage">
+                          <a id="disk-allocated" class="disk-line" style="width:auto" data-toggle="tooltip"
+                            data-placement="bottom" title="Uso do SO">
+                            <div id="disk-used" class="disk-line" style="width:0px" class="color-texts-system"></div>
+                            <div id="disk-free" class="disk-line" style="width:0px" class="color-texts-system"></div>
+                          </a>
+                          <a id="disk-other" class="disk-line" style="width:0px" data-toggle="tooltip"
+                            data-placement="bottom" class="color-texts-system" title="Outros uso"></a>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="storage-allocated-row">
+                      <th class="color-texts-system" data-lang-en="Allocated:" data-lang-pt="Espaço Alocado:"></th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_allocated_space" class="color-texts-system"></span>
+                        <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
+                          title="O tamanho da partição do seu sistema operacional.">
+                          <i class="material-icons"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr class="storage-legend-row">
+                      <th class="color-texts-system">
+                        <span class="disk-legend" style="background-color: #87A556"></span><span data-lang-en="Used:" data-lang-pt="Usado:"></span>
+                      </th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_used_space" class="color-texts-system"></span>
+                      </td>
+                    </tr>
+                    <tr class="storage-legend-row">
+                      <th class="color-texts-system">
+                        <span class="disk-legend" style="background-color: #C2D3A6"></span><span data-lang-en="Free:" data-lang-pt="Livre:"></span>
+                      </th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_free_space" class="color-texts-system"></span>
+                      </td>
+                    </tr>
+                    <tr class="storage-legend-row">
+                      <th class="color-texts-system">
+                        <span class="disk-legend" style="background-color: #484848;"></span><span data-lang-en="Others:" data-lang-pt="Outros:"></span>
+                      </th>
+                      <td class="specs-sel-text">
+                        <span id="lbl_other_space" class="color-texts-system"></span>
+                        <a data-toggle="tooltip" data-placement="top" class="color-texts-system"
+                          title="Reservado pelo sistema, outras partições, não alocado ou swap.">
+                          <i class="material-icons"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end of specs-box -->
+        </div> <!-- end of specs-basic -->
       <script src="js/jquery-2.1.4.js"></script>
       <script src="js/tether.js"></script>
       <script src="js/bootstrap.min.js"></script>
