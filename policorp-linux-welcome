@@ -194,6 +194,18 @@ class AppView(WebKit2.WebView):
         language_code = lang.split('.')[0]
         return language_code == "pt_BR"
 
+    def get_pretty_name(self):
+        try:
+            with open("/etc/os-release") as f:
+                for line in f:
+                    if line.startswith("PRETTY_NAME="):
+                        return line.strip().split("=", 1)[1].strip('"')
+
+        except Exception:
+            pass
+
+        return "Policorp Linux"
+
     def _do_command(self, uri):
         if uri.startswith("title?"):
             title = uri[6:]
@@ -227,9 +239,10 @@ class AppView(WebKit2.WebView):
 
             message += "<br><br> {}".format(company_name)
             if app._vendor_profile in ('vaio', 'positivo'):
-                product_name = "Policorp Linux OEM 13.1"
+                product_name = self.get_pretty_name()
             else:
-                product_name = "Policorp Linux 13.1"
+                product_name = self.get_pretty_name()
+
             message += "<br><br>{}".format(product_name)
 
             message += "</div>"

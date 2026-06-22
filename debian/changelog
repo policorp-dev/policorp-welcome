@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-23) stable; urgency=medium
+
+  * Ajuste no distroname
+
+ -- Lucas Salles <lucas.salles@policorp.com.br>  Tue, 19 May 2026 13:56:52 -0400
+
 policorp-linux-welcome (2.0.Policorp-22) stable; urgency=medium
 
   * remoção de ícones da Policorp
