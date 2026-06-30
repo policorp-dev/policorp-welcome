@@ -841,12 +841,19 @@ class SystemState(object):
     def set_password(self, webkit, mode, password):
         dbg.stdout('Password', f'Alteração de senha do sistema', 0, 3)
 
-        if mode == "general":
-            command = f"pkexec /usr/share/policorp-linux-welcome/scripts/update-config {password} {os.getlogin()} True"
-        else:
-            command = f"pkexec /usr/share/policorp-linux-welcome/scripts/update-config {password} {os.getlogin()}"
+        command = [
+            "pkexec",
+            "/usr/share/policorp-linux-welcome/scripts/update-config",
+            os.getlogin(),
+            "True" if mode == "general" else "False"
+        ]
 
-        process = subprocess.Popen(command, shell=True)
+        try:
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            stdout, stderr = process.communicate(input=f"{password}\n")
+        except subprocess.CalledProcessError as e:
+            system_error = e.stderr.strip() if e.stderr else "No system message."
+            print(f"Change root password error. Code: {system_error}", file=sys.stderr)
 
         app.run_javascript('setCursorNormal()')
 

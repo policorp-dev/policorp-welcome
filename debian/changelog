@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.0.Policorp-24) stable; urgency=medium
+
+  * fix: utilizar stdin para senha
+
+ -- Vinicius Neves <vinicius.neves@policorp.com.br>  Sun, 28 Jun 2026 11:45:52 -0400
+
 policorp-linux-welcome (2.0.Policorp-23) stable; urgency=medium
 
   * Ajuste no distroname
