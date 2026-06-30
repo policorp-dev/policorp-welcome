@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.1.Policorp-1) stable; urgency=medium
+
+  * refactor: utilizar GNOME users a partir da segunda troca de senha
+
+ -- Vinicius Neves <vinicius.neves@policorp.com.br>  Tue, 30 Jun 2026 16:47:34 -0400
+
 policorp-linux-welcome (2.0.Policorp-24) stable; urgency=medium
 
   * fix: utilizar stdin para senha

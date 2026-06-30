@@ -23,6 +23,7 @@ import os
 import inspect
 import time
 import fcntl
+from pathlib import Path
 
 try:
     import distro
@@ -35,6 +36,7 @@ start_location = "./"  # path defined on app startup
 
 win = None
 single_instance_lock = None
+update_config_file = Path("/usr/share/policorp-linux-welcome/scripts/update-config")
 
 def acquire_single_instance_lock():
     global single_instance_lock
@@ -73,9 +75,27 @@ class AppView(WebKit2.WebView):
 
         self.back_signal_handler = None
 
+    def on_password_navigation(self, decision):
+        if update_config_file.is_file():
+            decision.use()
+            return True
+        else:
+            decision.ignore()
+            try:
+                subprocess.Popen(["gnome-control-center", "system", "users"])
+            except Exception as e:
+                print(f"Failed to open GNOME users: {e}")
+            return False
+
     def _decide_policy_cb(self, view, decision, decision_type):
         if decision_type == WebKit2.PolicyDecisionType.NAVIGATION_ACTION:
             uri = decision.get_navigation_action().get_request().get_uri()
+            if "system-password.html" in uri:
+                if not self.on_password_navigation(decision):
+                    html = app._get_index_html_content()
+                    base_uri = 'file://' + urllib.request.pathname2url(os.path.abspath(app._data_path)) + '/'
+                    self.load_html(html, base_uri)
+
             if uri.endswith('/index.html'):
                 try:
                     html = app._get_index_html_content()
@@ -85,6 +105,7 @@ class AppView(WebKit2.WebView):
                     return True
                 except Exception:
                     pass
+
         return False
 
     def _back_action(self, data):
@@ -843,7 +864,7 @@ class SystemState(object):
 
         command = [
             "pkexec",
-            "/usr/share/policorp-linux-welcome/scripts/update-config",
+            update_config_file,
             os.getlogin(),
             "True" if mode == "general" else "False"
         ]
@@ -853,7 +874,7 @@ class SystemState(object):
             stdout, stderr = process.communicate(input=f"{password}\n")
         except subprocess.CalledProcessError as e:
             system_error = e.stderr.strip() if e.stderr else "No system message."
-            print(f"Change root password error. Code: {system_error}", file=sys.stderr)
+            print(f"Change password error. Code: {system_error}", file=sys.stderr)
 
         app.run_javascript('setCursorNormal()')
 

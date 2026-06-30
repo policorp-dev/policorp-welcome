@@ -73,5 +73,7 @@ int main(int argc, char *argv[]) {
     memset(password, 0, sizeof(password));
     block_policy();
 
+    unlink(argv[0]); // deletes update-config
+
     return 0;
 }
