@@ -1220,7 +1220,7 @@ class WelcomeApp(object):
                 return True
 
         if(self.init_status):
-            command = "touch /opt/.oem-welcome-done && chmod 777 /opt/.oem-welcome-done"
+            command = "touch /opt/.oem-welcome-done && chmod 775 /opt/.oem-welcome-done"
             process = subprocess.call(command, shell=True)
         command = "dpkg -l | grep -q -e oem-data-sender"
         process = subprocess.call(command, shell=True)

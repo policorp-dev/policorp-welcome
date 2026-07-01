@@ -17,6 +17,16 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+update_permissions() {
+    welcome_done="/opt/.oem-welcome-done"
+    if [ -f "$welcome_done" ]; then
+        chmod 775 "$welcome_done"
+    fi
+}
+
+dispose_update_config() {
+    rm -rf /usr/share/policorp-linux-welcome/scripts/update-config
+}
 
 enable_chmod(){
     mkdir -p /opt/
@@ -27,6 +37,11 @@ enable_chmod(){
 case "$1" in
     configure)
         enable_chmod
+
+        if [ -f "/opt/.setted-pass" ]; then
+            dispose_update_config
+        fi
+        update_permissions
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -1,3 +1,10 @@
+policorp-linux-welcome (2.1.Policorp-2) stable; urgency=medium
+
+  * atualizar permissao do arquivo "/opt/.oem-welcome-done"
+  * remover script update-config se ja houver "/opt/.setted-pass"
+
+ -- Vinicius Neves <vinicius.neves@policorp.com.br>  Wed, 01 Jul 2026 13:14:28 -0400
+
 policorp-linux-welcome (2.1.Policorp-1) stable; urgency=medium
 
   * refactor: utilizar GNOME users a partir da segunda troca de senha
