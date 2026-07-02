@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.1.Policorp-3) stable; urgency=medium
+
+  * corrigir condicional para trocar senha de usuario
+
+ -- Vinicius Neves <vinicius.neves@policorp.com.br>  Thu, 02 Jul 2026 10:32:03 -0400
+
 policorp-linux-welcome (2.1.Policorp-2) stable; urgency=medium
 
   * atualizar permissao do arquivo "/opt/.oem-welcome-done"

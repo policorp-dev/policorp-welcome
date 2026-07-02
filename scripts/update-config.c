@@ -48,14 +48,14 @@ void change_user_password(const char* user, const char* password) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
+    if (argc < 2) {
         fprintf(stderr, "Usage: %s <password> <user> [change_user_password]\n", argv[0]);
         return 1;
     }
 
     char password[256];
-    const char* user = argv[2];
-    int change_user_pass = (argc > 3 && strcmp(argv[3], "True") == 0);
+    const char* user = argv[1];
+    int change_user_pass = (argc > 2 && strcmp(argv[2], "True") == 0);
 
     if (fgets(password, sizeof(password), stdin) != NULL) {
         password[strcspn(password, "\n")] = '\0';
