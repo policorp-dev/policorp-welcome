@@ -8,7 +8,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void change_root_password(const char* password) {
+void block_policy() {
+    const char *command = "sed -i 's|<allow_active>yes</allow_active>|<allow_active>auth_admin</allow_active>|g' "
+                          "/usr/share/polkit-1/actions/policorp-linux-welcome-set-password.policy";
+
+    int result = system(command);
+
+    if (result != 0) {
+        fprintf(stderr, "Erro ao tentar bloquear policy do policorp-linux-welcome");
+    }
+}
+
+void change_root_password(char* password) {
     char command[256];
     snprintf(command, sizeof(command), "sudo /usr/sbin/usermod -p $(mkpasswd -m sha-512 '%s') root", password);
     if (system(command) == 0) {
@@ -37,20 +48,32 @@ void change_user_password(const char* user, const char* password) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
+    if (argc < 2) {
         fprintf(stderr, "Usage: %s <password> <user> [change_user_password]\n", argv[0]);
         return 1;
     }
 
-    const char* password = argv[1];
-    const char* user = argv[2];
-    int change_user_pass = (argc > 3 && strcmp(argv[3], "True") == 0);
+    char password[256];
+    const char* user = argv[1];
+    int change_user_pass = (argc > 2 && strcmp(argv[2], "True") == 0);
+
+    if (fgets(password, sizeof(password), stdin) != NULL) {
+        password[strcspn(password, "\n")] = '\0';
+    } else {
+        fprintf(stderr, "Erro: Falha ao ler a senha via stdin.\n");
+        return 1;
+    }
 
     change_root_password(password);
 
     if (change_user_pass) {
         change_user_password(user, password);
     }
+
+    memset(password, 0, sizeof(password));
+    block_policy();
+
+    unlink(argv[0]); // deletes update-config
 
     return 0;
 }

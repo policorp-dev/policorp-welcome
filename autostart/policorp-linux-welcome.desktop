@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Policorp Linux Welcome
-Exec=/bin/sh -c '[ -e /opt/.oem-welcome-done ] && exit 0; exec /usr/share/policorp-linux-welcome/policorp-linux-welcome'
+Exec=/bin/sh -c '([ -e /opt/.oem-welcome-done ] || [ -e /opt/.setted-pass ]) && exit 0; exec /usr/share/policorp-linux-welcome/policorp-linux-welcome'
 Icon=home
 NoDisplay=true
 X-GNOME-Autostart-Phase=Applications
