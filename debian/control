@@ -25,6 +25,7 @@ Depends: gir1.2-gtk-3.0,
          xdotool,
          whois,
          sed,
+         procps,
          ${misc:Depends}
 Description: Tela de boas-vindas para o Policorp Linux
  Uma tela de boas-vindas para o Policorp Linux que fornece links para recursos úteis e utilitários.
