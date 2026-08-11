@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adw" version="1.0"/>
+
+  <object class="AdwApplicationWindow" id="main_window">
+    <property name="default-width">900</property>
+    <property name="default-height">700</property>
+    <property name="title"></property>
+
+    <child>
+      <object class="AdwToolbarView" id="toolbar_view">
+        <child type="top">
+          <object class="AdwHeaderBar" id="header_bar">
+            <property name="show-end-title-buttons">True</property>
+            <child type="start">
+              <object class="GtkButton" id="back_button">
+                <property name="visible">False</property>
+                <property name="icon-name">go-previous-symbolic</property>
+                <property name="tooltip-text">Voltar</property>
+                <property name="css-classes">flat</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkLabel" id="header_title_label">
+                <property name="visible">False</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="AdwViewStack" id="view_stack">
+            <!-- paginas geradas e exbidas de forma dinamica via python-->
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

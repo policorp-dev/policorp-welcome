@@ -1,0 +1,42 @@
+{
+  "name": "Python GTK4 & Libadwaita (Debian Trixie)",
+  "build": {
+    "context": "..",
+    "dockerfile": "../Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.languageServer": "Pylance"
+      },
+      "extensions": [
+        "ms-python.python",              // Suporte padrão para Python
+        "ms-python.vscode-pylance",      // Auto-complete e análise estática
+        "bilelmoussaoui.flatpak-vscode"   // Facilita empacotamento Flatpak
+      ]
+    }
+  },
+  // Compartilha as variáveis essenciais de tela e áudio
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
+    "XDG_RUNTIME_DIR": "/tmp",
+    "PULSE_SERVER": "unix:${localEnv:XDG_RUNTIME_DIR}/pulse/native"
+  },
+  // Mapeia os sockets gráficos locais
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+    "source=${localEnv:XDG_RUNTIME_DIR}/wayland-0,target=/tmp/wayland-0,type=bind,consistency=cached"
+  ],
+  // Garante acesso à GPU física (aceleração 3D necessária para GTK 4)
+  "runArgs": [
+    "--net=host",
+    "--ipc=host",
+    "--device=/dev/dri:/dev/dri"
+  ],
+  // Executa no sistema hospedeiro para liberar acesso à tela antes de iniciar o container
+  "initializeCommand": "xhost +local:docker || true",
+
+  "remoteUser": "root"
+}

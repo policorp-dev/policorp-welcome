@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adw" version="1.0"/>
+
+  <!-- Raiz da página Home via Gtk.Template -->
+  <template class="MainMenuPage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="hexpand">True</property>
+    <property name="halign">fill</property>
+
+    <child>
+          <object class="GtkOverlay">
+            <property name="hexpand">True</property>
+            <property name="halign">fill</property>
+            <property name="valign">start</property>
+            <property name="height-request">180</property>
+
+            <child>
+              <object class="GtkPicture" id="img_overlay">
+                <!-- O arquivo será definido em runtime por main_menu.py para evitar depender de GResources -->
+                <property name="keep-aspect-ratio">False</property>
+                <property name="content-fit">cover</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+              </object>
+            </child>
+
+            <child type="overlay">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <style>
+                  <class name="header"/>
+                </style>
+
+                <child>
+                  <object class="GtkLabel" id="welcome_text">
+                    <property name="label" translatable="yes">Seja bem-vindo(a) ao</property>
+                    <style>
+                      <class name="subtitle-title"/>
+                    </style>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkLabel" id="sistema_linux_title">
+                    <property name="label" translatable="yes">Sistema Linux</property>
+                    <style>
+                      <class name="main-title"/>
+                    </style>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="video_link">
+                    <property name="halign">center</property>
+                    <property name="margin-top">8</property>
+                    <style>
+                      <class name="video_link"/>
+                      <class name="flat"/>
+                    </style>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">8</property>
+                        <style>
+                          <class name="botao-tour"/>
+                        </style>
+
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">video_library</property>
+                            <style>
+                              <class name="material-icons"/>
+                              <class name="text-danger"/>
+                            </style>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Faça um tour pelo sistema!</property>
+                            <style>
+                              <class name="black-text"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      <child>
+        <object class="GtkGrid">
+          <style>
+            <class name="grid-buttons"/>
+          </style>
+          <property name="row-spacing">16</property>
+          <property name="column-spacing">56</property>
+          <property name="hexpand">True</property>
+          <property name="vexpand">True</property>
+          <property name="halign">center</property>
+          <property name="valign">fill</property>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+                <class name="suggested-action"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick" id="gst_password_window"/>
+              </child>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">lock</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-primary"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel" id="password_title">
+                      <property name="label" translatable="yes">Senha do Administrador</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <layout>
+                <property name="column">0</property>
+                <property name="row">0</property>
+              </layout>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick"/>
+              </child>
+              <layout>
+                <property name="column">1</property>
+                <property name="row">0</property>
+              </layout>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">&#xE8D0;</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-purple"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Customização do Sistema</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick"/>
+              </child>
+              <layout>
+                <property name="column">0</property>
+                <property name="row">1</property>
+              </layout>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">group</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-success"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Controle de Usuários</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick"/>
+              </child>
+              <layout>
+                <property name="column">1</property>
+                <property name="row">1</property>
+              </layout>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">book</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-danger"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Introdução ao Sistema</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick"/>
+              </child>
+              <layout>
+                <property name="column">0</property>
+                <property name="row">2</property>
+              </layout>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">info</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-orange"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Informações do Sistema</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <style>
+                <class name="card"/>
+                <class name="activatable"/>
+              </style>
+              <child>
+                <object class="GtkGestureClick"/>
+              </child>
+              <layout>
+                <property name="column">1</property>
+                <property name="row">2</property>
+              </layout>
+              <child>
+                <object class="GtkBox">
+                  <property name="hexpand">True</property>
+                  <property name="halign">center</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label">perm_media</property>
+                      <style>
+                        <class name="material-icons"/>
+                        <class name="text-info"/>
+                      </style>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Instalar Codecs Multimídia</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+
+          <child>
+            <object class="GtkCheckButton">
+              <property name="margin-top">16</property>
+              <property name="active">True</property>
+              <property name="halign">center</property>
+              <property name="label" translatable="yes">Enviar Informações do Sistema</property>
+              <layout>
+                <property name="column-span">2</property>
+                <property name="column">0</property>
+                <property name="row">3</property>
+              </layout>
+            </object>
+          </child>
+        </object>
+      </child>
+
+      <child>
+        <object class="GtkBox">
+          <style>
+            <class name="footer"/>
+          </style>
+          <property name="orientation">horizontal</property>
+          <child>
+            <object class="GtkLabel">
+              <style>
+                <class name="link"/>
+              </style>
+              <property name="label" translatable="yes">Acesse: https://www.policorp.com.br/faq</property>
+              <property name="cursor">
+                <object class="GdkCursor">
+                  <property name="name">pointer</property>
+                </object>
+              </property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkSeparator">
+              <property name="hexpand">True</property>
+              <property name="halign">fill</property>
+              <property name="opacity">0</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkGrid">
+              <property name="orientation">horizontal</property>
+              <property name="column-spacing">8</property>
+              <child>
+                <object class="AdwAvatar" id="linkedin_avatar">
+                  <property name="size">32</property>
+                  <!-- A imagem será definida em runtime por main_menu.py -->
+                  <property name="cursor">
+                    <object class="GdkCursor">
+                      <property name="name">pointer</property>
+                    </object>
+                  </property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwAvatar" id="youtube_avatar">
+                  <property name="size">32</property>
+                  <!-- A imagem será definida em runtime por main_menu.py -->
+                  <property name="cursor">
+                    <object class="GdkCursor">
+                      <property name="name">pointer</property>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+  </template>
+</interface>

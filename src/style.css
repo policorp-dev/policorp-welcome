@@ -1,0 +1,109 @@
+:root {
+--blue: #007bff;
+--indigo: #6610f2;
+--purple: #6f42c1;
+--pink: #e83e8c;
+--red: #dc3545;
+--orange: #fd7e14;
+--yellow: #ffc107;
+--green: #28a745;
+--teal: #20c997;
+--cyan: #17a2b8;
+--white: #fff;
+--gray: #6c757d;
+--gray-dark: #343a40;
+--primary: #007bff;
+--secondary: #6c757d;
+--success: #28a745;
+--info: #17a2b8;
+--warning: #ffc107;
+--danger: #dc3545;
+--light: #f8f9fa;
+--dark: #343a40;
+}
+
+* {
+  font-family: "Ubuntu";
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  text-transform: none;
+  color: var(--light);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-success {
+  color: var(--success);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-orange {
+  color: var(--orange);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-info {
+  color: var(--info);
+}
+
+.text-purple {
+  color: var(--purple);
+}
+
+.black-text {
+  color: var(--dark);
+  font-weight: normal;
+}
+
+.main-title {
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--light);
+}
+
+.subtitle-title {
+  color: var(--light);
+}
+
+.grid-buttons > box {
+  padding: 1rem 2rem;
+}
+
+.grid-buttons box label + label {
+  margin-left: 0.5rem;
+}
+
+.footer {
+  padding: 1rem 2rem;
+  background: #404552;
+  color: var(--light);
+}
+
+label.link {
+  text-decoration: underline;
+}
+
+.title-1 {
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: normal;
+}
+
+.password_main_grid {
+  /*display: grid;*/
+  /*grid-template-columns: 1fr 1fr 1fr;*/
+}
