@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adw" version="1.0"/>
+
+  <template class="SystemCustomizationPage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">12</property>
+    <property name="margin-top">16</property>
+    <property name="margin-bottom">16</property>
+    <property name="margin-start">16</property>
+    <property name="margin-end">16</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+
+    <child>
+      <object class="GtkGrid">
+        <property name="column-spacing">16</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="halign">fill</property>
+        <property name="valign">start</property>
+
+        <!-- Left card and column -->
+        <child>
+          <object class="GtkBox" id="left_panel">
+            <property name="orientation">vertical</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">False</property>
+            <property name="valign">start</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+            <style>
+              <class name="card"/>
+              <class name="activatable"/>
+            </style>
+
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+
+                <child>
+                  <object class="GtkPicture" id="img_light">
+                    <property name="hexpand">False</property>
+                    <property name="vexpand">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">start</property>
+                    <property name="content-fit">scale-down</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkLabel" id="label_light">
+                    <property name="halign">center</property>
+                    <property name="justify">center</property>
+                    <property name="label" translatable="yes">Modo Claro</property>
+                    <style>
+                      <class name="title-1"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            
+          </object>
+        </child>
+
+        <!-- Left column content below the card (outside the card) -->
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="margin-top">32</property>
+            <property name="spacing">8</property>
+            <property name="hexpand">True</property>
+            <child>
+              <object class="GtkLabel" id="left_title">
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Configuração de Aparência</property>
+                <style>
+                  <class name="title-2"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="left_desc">
+                <property name="wrap">True</property>
+                <property name="max-width-chars">40</property>
+                <property name="halign">fill</property>
+                <property name="justify">center</property>
+                <property name="label" translatable="yes">O Policorp Linux oferece opções para definir e personalizar temas e diversas outras configurações visuais disponíveis.</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_background">
+                <property name="margin-top">16</property>
+                <property name="label" translatable="yes">Configuração de Aparência</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+
+        <!-- Right column -->
+        <child>
+          <object class="GtkBox" id="right_panel">
+            <property name="orientation">vertical</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">False</property>
+            <property name="valign">start</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
+            <style>
+              <class name="card"/>
+              <class name="activatable"/>
+            </style>
+
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+
+                <child>
+                  <object class="GtkPicture" id="img_dark">
+                    <property name="hexpand">False</property>
+                    <property name="vexpand">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">start</property>
+                    <property name="content-fit">scale-down</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkLabel" id="label_dark">
+                    <property name="halign">center</property>
+                    <property name="justify">center</property>
+                    <property name="label" translatable="yes">Modo Escuro</property>
+                    <style>
+                      <class name="title-1"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="margin-top">32</property>
+            <property name="spacing">8</property>
+            <property name="hexpand">True</property>
+            <child>
+              <object class="GtkLabel" id="right_title">
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Configuração de Tela</property>
+                <style>
+                  <class name="title-2"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="right_desc">
+                <property name="wrap">True</property>
+                <property name="max-width-chars">40</property>
+                <property name="halign">fill</property>
+                <property name="justify">center</property>
+                <property name="label" translatable="yes">O Policorp Linux oferece opções para ajustar e personalizar a configuração da tela e outras configurações visuais.</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_display">
+                <property name="margin-top">16</property>
+                <property name="label" translatable="yes">Abrir Tela</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

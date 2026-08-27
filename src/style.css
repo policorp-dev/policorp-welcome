@@ -93,6 +93,20 @@
   color: var(--light);
 }
 
+/* Selected card: use GNOME primary color variable */
+.card.selected {
+  background-color: var(--primary);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+}
+.card.selected .title-1 {
+  color: var(--white);
+}
+
+/* ensure label under image defaults to dark text when not selected */
+.card .title-1 {
+  color: #111111;
+}
+
 label.link {
   text-decoration: underline;
 }

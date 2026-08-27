@@ -9,6 +9,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, Gdk, Gio, Adw, GObject
 from pages.admin_password.admin_password import AdminPasswordPage
+from pages.system_customization.system_customization import SystemCustomizationPage
 
 _UI_FILE = str(Path(__file__).with_name("main_menu.ui"))
 
@@ -24,12 +25,18 @@ class MainMenuPage(Gtk.Box):
     youtube_avatar: Adw.Avatar = Gtk.Template.Child()
     password_title: Gtk.Label = Gtk.Template.Child()
     gst_password_window: Gtk.GestureClick = Gtk.Template.Child()
+    gst_system_customization: Gtk.GestureClick = Gtk.Template.Child()
     video_link: Gtk.Button = Gtk.Template.Child()
+    system_customization_title: Gtk.Label = Gtk.Template.Child()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.init_template()
         self.gst_password_window.connect("released", self.on_password_window_released)
+        try:
+            self.gst_system_customization.connect("released", self.on_system_customization_released)
+        except Exception:
+            pass
 
         try:
             images_dir = Path(__file__).parents[2] / "images"
@@ -69,6 +76,7 @@ class MainMenuPage(Gtk.Box):
     def card_titles(self) -> Dict[str, str]:
         mapping = {
             "gst_password_window": self.password_title
+            , "gst_system_customization": self.system_customization_title
         }
         titles: Dict[str, str] = {}
         for key, label in mapping.items():
@@ -82,7 +90,14 @@ class MainMenuPage(Gtk.Box):
         admin_page = AdminPasswordPage()
         view_stack.add_titled(admin_page, "admin_password", "Administrador")
 
+        sys_page = SystemCustomizationPage()
+        view_stack.add_titled(sys_page, "system_customization", "Customização do Sistema")
+
     def on_password_window_released(self, *_args: object) -> None:
         title = (self.password_title.get_label() or "").strip()
         self.emit("open-page", "admin_password", title)
+
+    def on_system_customization_released(self, *_args: object) -> None:
+        title = (self.system_customization_title.get_label() or "").strip()
+        self.emit("open-page", "system_customization", title)
 
