@@ -1,3 +1,9 @@
+policorp-linux-welcome (2.1.Policorp-6) stable; urgency=medium
+
+  * Adicionado  NotShowIn=GNOME-Kiosk;gnome-kiosk-script-wayland;
+
+ -- Vinicius Neves <vinicius.neves@policorp.com.br>  Wed, 11 Nov 2026 18:42:48 +0000
+
 policorp-linux-welcome (2.1.Policorp-5) stable; urgency=medium
 
   * Corrigir launch do burnrecover

@@ -4,4 +4,5 @@ Name=Policorp Linux Welcome
 Exec=/bin/sh -c '([ -e /opt/.oem-welcome-done ] || [ -e /opt/.setted-pass ]) && exit 0; exec /usr/share/policorp-linux-welcome/policorp-linux-welcome'
 Icon=home
 NoDisplay=true
+NotShowIn=GNOME-Kiosk;gnome-kiosk-script-wayland;
 X-GNOME-Autostart-Phase=Applications
