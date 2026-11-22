@@ -6,3 +6,4 @@ debian/*-build-stamp
 debian/files
 debian/*.substvars
 scripts/update-config
+__pycache__/

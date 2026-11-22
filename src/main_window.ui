@@ -13,6 +13,7 @@
         <child type="top">
           <object class="AdwHeaderBar" id="header_bar">
             <property name="show-end-title-buttons">True</property>
+            <property name="centering-policy">strict</property>
             <child type="start">
               <object class="GtkButton" id="back_button">
                 <property name="visible">False</property>
@@ -21,13 +22,16 @@
                 <property name="css-classes">flat</property>
               </object>
             </child>
-            <child type="start">
+            <property name="title-widget">
               <object class="GtkLabel" id="header_title_label">
                 <property name="visible">False</property>
-                <property name="halign">start</property>
+                <property name="halign">center</property>
                 <property name="valign">center</property>
+                <style>
+                  <class name="title"/>
+                </style>
               </object>
-            </child>
+            </property>
           </object>
         </child>
 
