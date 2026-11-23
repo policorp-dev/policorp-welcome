@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk" version="4.0"/>
+    <requires lib="adw" version="1.0"/>
+
+    <template class="SystemIntroductionPage" parent="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="margin-top">16</property>
+        <property name="margin-bottom">16</property>
+        <property name="margin-start">16</property>
+        <property name="margin-end">16</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+
+        <child>
+            <object class="GtkGrid">
+                <property name="column-homogeneous">True</property>
+                <property name="column-spacing">16</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="halign">fill</property>
+                <property name="valign">start</property>
+
+                <child>
+                    <object class="GtkBox" id="video_card">
+                        <property name="orientation">vertical</property>
+                        <property name="hexpand">True</property>
+                        <property name="valign">fill</property>
+                        <property name="overflow">hidden</property>
+                        <style>
+                            <class name="card"/>
+                        </style>
+                        <child>
+                            <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">16</property>
+                                <property name="margin-bottom">16</property>
+                                <child>
+                                    <object class="PolicorpImageAspectFrame" id="video_image_frame">
+                                        <property name="hexpand">True</property>
+                                        <property name="halign">fill</property>
+                                        <property name="vexpand">False</property>
+                                        <property name="valign">start</property>
+                                        <property name="ratio">1.777778</property>
+                                        <property name="obey-child">False</property>
+                                        <property name="child">
+                                            <object class="GtkPicture" id="video_image">
+                                                <property name="hexpand">True</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="halign">fill</property>
+                                                <property name="valign">fill</property>
+                                                <property name="can-shrink">True</property>
+                                                <property name="content-fit">cover</property>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel" id="video_heading">
+                                        <property name="wrap">True</property>
+                                        <property name="justify">center</property>
+                                        <property name="xalign">0.5</property>
+                                        <property name="margin-start">16</property>
+                                        <property name="margin-end">16</property>
+                                        <property name="label" translatable="yes">Tour pelo Sistema</property>
+                                        <style>
+                                            <class name="heading"/>
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel" id="video_text">
+                                        <property name="wrap">True</property>
+                                        <property name="justify">left</property>
+                                        <property name="xalign">0</property>
+                                        <property name="margin-start">16</property>
+                                        <property name="margin-end">16</property>
+                                        <property name="label" translatable="yes">Um vídeo que mostrará a você como navegar pelo sistema, destacando suas funcionalidades e garantindo seu uso eficaz, produtivo e simples.</property>
+                                        <style>
+                                            <class name="body"/>
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkButton" id="video_button">
+                                        <property name="halign">center</property>
+                                        <property name="child">
+                                            <object class="GtkBox">
+                                                <property name="spacing">6</property>
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">media-playback-start-symbolic</property>
+                                                        <property name="pixel-size">16</property>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label" translatable="yes">Assistir ao vídeo</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                        <layout>
+                            <property name="column">0</property>
+                            <property name="row">0</property>
+                        </layout>
+                    </object>
+                </child>
+
+                <child>
+                    <object class="GtkBox" id="pdf_card">
+                        <property name="orientation">vertical</property>
+                        <property name="hexpand">True</property>
+                        <property name="valign">fill</property>
+                        <property name="overflow">hidden</property>
+                        <style>
+                            <class name="card"/>
+                        </style>
+                        <child>
+                            <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">16</property>
+                                <property name="margin-bottom">16</property>
+                                <child>
+                                    <object class="PolicorpImageAspectFrame" id="pdf_image_frame">
+                                        <property name="hexpand">True</property>
+                                        <property name="halign">fill</property>
+                                        <property name="vexpand">False</property>
+                                        <property name="valign">start</property>
+                                        <property name="ratio">1.777778</property>
+                                        <property name="obey-child">False</property>
+                                        <property name="child">
+                                            <object class="GtkPicture" id="pdf_image">
+                                                <property name="hexpand">True</property>
+                                                <property name="vexpand">True</property>
+                                                <property name="halign">fill</property>
+                                                <property name="valign">fill</property>
+                                                <property name="can-shrink">True</property>
+                                                <property name="content-fit">cover</property>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel" id="pdf_heading">
+                                        <property name="wrap">True</property>
+                                        <property name="justify">center</property>
+                                        <property name="xalign">0.5</property>
+                                        <property name="margin-start">16</property>
+                                        <property name="margin-end">16</property>
+                                        <property name="label" translatable="yes">Manual do Usuário</property>
+                                        <style>
+                                            <class name="heading"/>
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkLabel" id="pdf_text">
+                                        <property name="wrap">True</property>
+                                        <property name="justify">left</property>
+                                        <property name="xalign">0</property>
+                                        <property name="margin-start">16</property>
+                                        <property name="margin-end">16</property>
+                                        <property name="label" translatable="yes">Um PDF indispensável para ajudar você a aproveitar todas as funcionalidades do sistema operacional de forma simples e prática.</property>
+                                        <style>
+                                            <class name="body"/>
+                                        </style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkButton" id="pdf_button">
+                                        <property name="halign">center</property>
+                                        <property name="child">
+                                            <object class="GtkBox">
+                                                <property name="spacing">6</property>
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">x-office-document-symbolic</property>
+                                                        <property name="pixel-size">16</property>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object class="GtkLabel">
+                                                        <property name="label" translatable="yes">Abrir manual em PDF</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </property>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                        <layout>
+                            <property name="column">1</property>
+                            <property name="row">0</property>
+                        </layout>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>

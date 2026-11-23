@@ -233,7 +233,7 @@
                 <class name="activatable"/>
               </style>
               <child>
-                <object class="GtkGestureClick"/>
+                <object class="GtkGestureClick" id="gst_system_introduction"/>
               </child>
               <layout>
                 <property name="column">1</property>
@@ -253,7 +253,7 @@
                     </object>
                   </child>
                   <child>
-                    <object class="GtkLabel">
+                    <object class="GtkLabel" id="system_introduction_title">
                       <property name="label" translatable="yes">Introdução ao Sistema</property>
                     </object>
                   </child>
