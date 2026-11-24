@@ -263,7 +263,7 @@
           </child>
 
           <child>
-            <object class="GtkBox">
+            <object class="GtkBox" id="system_specifications_card">
               <property name="hexpand">True</property>
               <property name="halign">fill</property>
               <style>
@@ -271,7 +271,7 @@
                 <class name="activatable"/>
               </style>
               <child>
-                <object class="GtkGestureClick"/>
+                <object class="GtkGestureClick" id="gst_system_specifications"/>
               </child>
               <layout>
                 <property name="column">0</property>
@@ -291,7 +291,7 @@
                     </object>
                   </child>
                   <child>
-                    <object class="GtkLabel">
+                    <object class="GtkLabel" id="system_specifications_title">
                       <property name="label" translatable="yes">Informações do Sistema</property>
                     </object>
                   </child>

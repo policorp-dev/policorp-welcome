@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="adw" version="1.0"/>
+
+  <template class="SystemSpecificationsPage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="margin-top">16</property>
+    <property name="margin-bottom">16</property>
+    <property name="margin-start">16</property>
+    <property name="margin-end">16</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="hscrollbar-policy">never</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">24</property>
+            <property name="hexpand">True</property>
+            <property name="halign">fill</property>
+
+            <child>
+              <object class="GtkGrid" id="specifications_columns">
+                <property name="column-homogeneous">True</property>
+                <property name="column-spacing">16</property>
+                <property name="row-spacing">12</property>
+                <property name="hexpand">True</property>
+                <property name="halign">fill</property>
+
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Processador</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">start</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                    <child>
+                      <object class="AdwActionRow" id="cpu_model_value">
+                        <property name="title" translatable="yes">Modelo</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="cpu_cores_value">
+                        <property name="title" translatable="yes">Núcleos</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="architecture_value">
+                        <property name="title" translatable="yes">Arquitetura</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Componentes</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">start</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                    <child>
+                      <object class="AdwActionRow" id="motherboard_value">
+                        <property name="title" translatable="yes">Placa-mãe</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="memory_value">
+                        <property name="title" translatable="yes">Memória RAM</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="graphics_value">
+                        <property name="title" translatable="yes">Gráficos</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Sistema</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">start</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="AdwActionRow" id="distro_value">
+                        <property name="title" translatable="yes">Distribuição</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="kernel_value">
+                        <property name="title" translatable="yes">Kernel</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="company_value">
+                        <property name="title" translatable="yes">Empresa</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Armazenamento</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">start</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="AdwActionRow" id="root_directory_value">
+                        <property name="title" translatable="yes">Dispositivo raiz</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="filesystem_value">
+                        <property name="title" translatable="yes">Sistema de arquivos</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="capacity_value">
+                        <property name="title" translatable="yes">Capacidade</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">False</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="allocated_row">
+                        <property name="title" translatable="yes">Espaço Alocado</property>
+                        <property name="subtitle" translatable="yes">Carregando…</property>
+                        <property name="subtitle-lines">0</property>
+                        <property name="subtitle-selectable">True</property>
+                        <property name="use-markup">True</property>
+                        <property name="activatable">False</property>
+                        <style><class name="property"/></style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>

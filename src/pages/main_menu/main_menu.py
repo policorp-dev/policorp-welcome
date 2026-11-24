@@ -11,6 +11,7 @@ from gi.repository import Gtk, Gdk, Gio, Adw, GObject
 from pages.admin_password.admin_password import AdminPasswordPage
 from pages.system_customization.system_customization import SystemCustomizationPage
 from pages.system_introduction.system_introduction import SystemIntroductionPage
+from pages.system_specifications.system_specifications import SystemSpecificationsPage
 from pages.users_management.users_management import UsersManagementPage
 
 _UI_FILE = str(Path(__file__).with_name("main_menu.ui"))
@@ -30,10 +31,12 @@ class MainMenuPage(Gtk.Box):
     gst_system_customization: Gtk.GestureClick = Gtk.Template.Child()
     gst_users_management: Gtk.GestureClick = Gtk.Template.Child()
     gst_system_introduction: Gtk.GestureClick = Gtk.Template.Child()
+    gst_system_specifications: Gtk.GestureClick = Gtk.Template.Child()
     video_link: Gtk.Button = Gtk.Template.Child()
     system_customization_title: Gtk.Label = Gtk.Template.Child()
     users_management_title: Gtk.Label = Gtk.Template.Child()
     system_introduction_title: Gtk.Label = Gtk.Template.Child()
+    system_specifications_title: Gtk.Label = Gtk.Template.Child()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -51,6 +54,7 @@ class MainMenuPage(Gtk.Box):
             self.gst_system_introduction.connect("released", self.on_system_introduction_released)
         except Exception:
             pass
+        self.gst_system_specifications.connect("released", self.on_system_specifications_released)
 
         try:
             images_dir = Path(__file__).parents[2] / "images"
@@ -93,6 +97,7 @@ class MainMenuPage(Gtk.Box):
             , "gst_system_customization": self.system_customization_title
             , "gst_users_management": self.users_management_title
             , "gst_system_introduction": self.system_introduction_title
+            , "gst_system_specifications": self.system_specifications_title
         }
         titles: Dict[str, str] = {}
         for key, label in mapping.items():
@@ -115,6 +120,9 @@ class MainMenuPage(Gtk.Box):
         introduction_page = SystemIntroductionPage()
         view_stack.add_titled(introduction_page, "system_introduction", "Introdução ao Sistema")
 
+        specifications_page = SystemSpecificationsPage()
+        view_stack.add_titled(specifications_page, "system_specifications", "Informações do Sistema")
+
     def on_password_window_released(self, *_args: object) -> None:
         title = (self.password_title.get_label() or "").strip()
         self.emit("open-page", "admin_password", title)
@@ -130,4 +138,8 @@ class MainMenuPage(Gtk.Box):
     def on_system_introduction_released(self, *_args: object) -> None:
         title = (self.system_introduction_title.get_label() or "").strip()
         self.emit("open-page", "system_introduction", title)
+
+    def on_system_specifications_released(self, *_args: object) -> None:
+        title = (self.system_specifications_title.get_label() or "").strip()
+        self.emit("open-page", "system_specifications", title)
 
